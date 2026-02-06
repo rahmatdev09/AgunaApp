@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail & Analisis Laba - Aguna Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(15px);
+      }
+      .card-modern {
+        border-radius: 2rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      }
+      .tab-active {
+        color: #4f46e5;
+        border-bottom: 3px solid #4f46e5;
+      }
+      #map {
+        height: 450px;
+        width: 100%;
+        border-radius: 1.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-[#f8fafc] text-slate-800 min-h-screen pb-20">
+    <nav
+      class="glass sticky top-0 z-[100] border-b border-slate-200 px-6 md:px-12 py-4 flex justify-between items-center"
+    >
+      <a
+        href="dapur.html"
+        class="flex items-center text-slate-500 hover:text-indigo-600 transition-all font-bold text-sm"
+      >
+        <i class="fas fa-arrow-left mr-2"></i> Kembali
+      </a>
+      <div class="text-indigo-600 font-black tracking-tighter text-2xl">
+        AGUNA<span class="text-slate-800">SYS</span>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-10 px-6">
+      <div id="loader" class="flex flex-col items-center justify-center py-20">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-100 border-t-indigo-600"
+        ></div>
+        <p
+          class="mt-4 text-slate-400 font-medium tracking-widest uppercase text-[10px]"
+        >
+          Sinkronisasi Data...
+        </p>
+      </div>
+
+      <div
+        id="content"
+        class="hidden space-y-8 animate-in fade-in duration-500"
+      >
+        <div class="bg-white card-modern p-8 md:p-10 relative overflow-hidden">
+          <div
+            class="absolute -right-10 -top-10 w-40 h-40 bg-indigo-50 rounded-full opacity-50"
+          ></div>
+
+          <div class="relative z-10">
+            <span
+              id="det-uid"
+              class="bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest"
+              >UID: ---</span
+            >
+            <h1
+              id="det-nama"
+              class="text-4xl font-black text-slate-900 mt-4 capitalize"
+            >
+              Nama Dapur
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <div
+                class="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center"
+              >
+                <div
+                  class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-indigo-500 mr-4"
+                >
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase">
+                    Lokasi
+                  </p>
+                  <p id="det-lokasi" class="text-sm font-bold text-slate-700">
+                    ---
+                  </p>
+                </div>
+              </div>
+              <div
+                class="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center"
+              >
+                <div
+                  class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-indigo-500 mr-4"
+                >
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase">
+                    Email
+                  </p>
+                  <p id="det-email" class="text-sm font-bold text-slate-700">
+                    ---
+                  </p>
+                </div>
+              </div>
+              <div
+                class="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center"
+              >
+                <div
+                  class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-indigo-500 mr-4"
+                >
+                  <i class="fas fa-lock"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase">
+                    Password
+                  </p>
+                  <p id="det-pass" class="text-sm font-bold text-slate-700">
+                    ---
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex space-x-10 mt-12 border-b border-slate-100">
+              <button
+                onclick="switchTab('preorder')"
+                id="tab-preorder-btn"
+                class="pb-4 text-sm font-extrabold transition-all tab-active uppercase tracking-wider"
+              >
+                <i class="fas fa-boxes-stacked mr-2"></i> Pre-Order & Lacak
+              </button>
+              <button
+                onclick="switchTab('laba')"
+                id="tab-laba-btn"
+                class="pb-4 text-sm font-extrabold text-slate-400 hover:text-indigo-600 transition-all uppercase tracking-wider"
+              >
+                <i class="fas fa-chart-line mr-2"></i> Laba Bersih
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-preorder" class="space-y-6">
+          <div class="bg-white card-modern overflow-hidden">
+            <div
+              class="p-6 bg-slate-50/50 border-b flex flex-col md:flex-row gap-4 justify-between items-center"
+            >
+              <div class="relative w-full md:w-96">
+                <i
+                  class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"
+                ></i>
+                <input
+                  type="text"
+                  id="searchBarang"
+                  placeholder="Cari barang atau driver..."
+                  class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <input
+                type="date"
+                id="filterTanggal"
+                class="w-full md:w-auto px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 outline-none"
+              />
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 border-b"
+                  >
+                    <th class="px-8 py-5">Barang & Driver</th>
+                    <th class="px-8 py-5 text-center">Qty</th>
+                    <th class="px-8 py-5">Hrg Beli</th>
+                    <th class="px-8 py-5">Hrg Jual</th>
+                    <th class="px-8 py-5 text-emerald-600">Laba Bersih</th>
+                    <th class="px-8 py-5">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="table-barang"
+                  class="divide-y divide-slate-50 text-sm font-medium"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="tab-laba"
+          class="hidden space-y-8 animate-in slide-in-from-bottom-5 duration-500"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div
+              class="bg-white card-modern p-8 border-l-[12px] border-emerald-500 shadow-lg"
+            >
+              <p
+                class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2"
+              >
+                Total Laba Bersih
+              </p>
+              <h2
+                class="text-4xl font-black text-emerald-600"
+                id="total-laba-summary"
+              >
+                Rp 0
+              </h2>
+              <div
+                class="mt-4 flex items-center text-emerald-500 text-xs font-bold"
+              >
+                <i class="fas fa-arrow-up mr-1"></i> Terakumulasi Real-time
+              </div>
+            </div>
+            <div class="md:col-span-2 bg-white card-modern p-8">
+              <h3
+                class="font-black text-slate-800 text-lg mb-6 flex items-center"
+              >
+                <i class="fas fa-wave-square mr-3 text-indigo-500"></i> Tren
+                Laba Harian
+              </h3>
+              <div class="h-[300px]">
+                <canvas id="labaChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="modalMaps"
+      class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center z-[200] p-4"
+    >
+      <div
+        class="bg-white rounded-[3rem] w-full max-w-4xl overflow-hidden shadow-2xl scale-in-center"
+      >
+        <div
+          class="p-8 border-b flex justify-between items-center bg-slate-50/50"
+        >
+          <div>
+            <h3
+              id="modal-title-driver"
+              class="font-black text-slate-900 text-2xl tracking-tighter"
+            >
+              Posisi Driver
+            </h3>
+            <p
+              id="modal-desc-barang"
+              class="text-xs text-indigo-500 font-bold uppercase mt-1 tracking-widest"
+            ></p>
+          </div>
+          <button
+            onclick="closeMap()"
+            class="w-12 h-12 bg-white shadow-md rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all text-xl"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="p-8">
+          <div id="map"></div>
+          <div
+            class="mt-6 flex items-center justify-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]"
+          >
+            <i class="fas fa-satellite mr-2 animate-pulse"></i> Powered by
+            OpenStreetMap & Leaflet
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBuIk0yhnqpcrkt4q_ed9ikJYuo6PJ78aQ",
+        authDomain: "koperasi-aguna-3a14a.firebaseapp.com",
+        projectId: "koperasi-aguna-3a14a",
+        storageBucket: "koperasi-aguna-3a14a.firebasestorage.app",
+        messagingSenderId: "668307732730",
+        appId: "1:668307732730:web:c2457d9a690eb303c3f143",
+        measurementId: "G-GJKDJ6LNDQ",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const urlParams = new URLSearchParams(window.location.search);
+      const docId = urlParams.get("id");
+
+      // State
+      let map, marker, chartInstance;
+      const listBarang = [
+        {
+          nama: "Minyak Goreng 2L",
+          driver: "Budi Santoso",
+          qty: 15,
+          hrgBeli: 31000,
+          hrgJual: 38000,
+          fullDate: "2026-02-04",
+          lat: -6.2088,
+          lng: 106.8456,
+        },
+        {
+          nama: "Beras Pandan 5kg",
+          driver: "Ahmad Driver",
+          qty: 8,
+          hrgBeli: 62000,
+          hrgJual: 75000,
+          fullDate: "2026-02-04",
+          lat: -6.9147,
+          lng: 107.6098,
+        },
+        {
+          nama: "Gula Pasir 1kg",
+          driver: "Siti Logistik",
+          qty: 20,
+          hrgBeli: 14000,
+          hrgJual: 18000,
+          fullDate: "2026-02-03",
+          lat: -7.2575,
+          lng: 112.7521,
+        },
+      ];
+
+      const formatIDR = (v) =>
+        new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(v);
+
+      // -- Page Initialization --
+      async function initPage() {
+        if (!docId) {
+          window.location.href = "dapur.html";
+          return;
+        }
+        try {
+          const docSnap = await getDoc(doc(db, "dapur", docId));
+          if (docSnap.exists()) {
+            const d = docSnap.data();
+            document.getElementById("det-nama").innerText =
+              d.nama || "Unit Dapur";
+            document.getElementById("det-uid").innerText =
+              `UID: ${d.uid || "---"}`;
+            document.getElementById("det-lokasi").innerText = d.lokasi || "-";
+            document.getElementById("det-email").innerText = d.email || "-";
+            document.getElementById("det-pass").innerText =
+              d.password || "******";
+
+            document.getElementById("loader").classList.add("hidden");
+            document.getElementById("content").classList.remove("hidden");
+            renderTable(listBarang);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      // -- Table Rendering (Pre-Order) --
+      function renderTable(data) {
+        const container = document.getElementById("table-barang");
+        container.innerHTML = data
+          .map((item) => {
+            const labaBersih = (item.hrgJual - item.hrgBeli) * item.qty;
+            return `
+                <tr class="hover:bg-slate-50 transition-all border-b border-slate-50 group">
+                    <td class="px-8 py-5">
+                        <div class="font-bold text-slate-800">${item.nama}</div>
+                        <div class="text-[10px] text-indigo-500 font-bold uppercase mt-1 italic"><i class="fas fa-truck mr-1"></i> Driver: ${item.driver}</div>
+                    </td>
+                    <td class="px-8 py-5 text-center font-black text-slate-500">${item.qty}</td>
+                    <td class="px-8 py-5 text-slate-400">${formatIDR(item.hrgBeli)}</td>
+                    <td class="px-8 py-5 font-bold text-slate-700">${formatIDR(item.hrgJual)}</td>
+                    <td class="px-8 py-5 font-black text-emerald-600">${formatIDR(labaBersih)}</td>
+                    <td class="px-8 py-5">
+                        <button onclick="openMap(${item.lat}, ${item.lng}, '${item.driver}', '${item.nama}')" 
+                                class="bg-indigo-50 text-indigo-600 px-5 py-2 rounded-xl text-xs font-black hover:bg-indigo-600 hover:text-white transition-all">
+                            <i class="fas fa-location-arrow mr-1"></i> Lacak
+                        </button>
+                    </td>
+                </tr>`;
+          })
+          .join("");
+      }
+
+      // -- Tab Switcher --
+      window.switchTab = (tab) => {
+        const preorder = document.getElementById("tab-preorder");
+        const laba = document.getElementById("tab-laba");
+        const btnP = document.getElementById("tab-preorder-btn");
+        const btnL = document.getElementById("tab-laba-btn");
+
+        if (tab === "preorder") {
+          preorder.classList.remove("hidden");
+          laba.classList.add("hidden");
+          btnP.classList.add("tab-active");
+          btnL.classList.remove("tab-active");
+          btnL.classList.add("text-slate-400");
+        } else {
+          preorder.classList.add("hidden");
+          laba.classList.remove("hidden");
+          btnL.classList.add("tab-active");
+          btnP.classList.remove("tab-active");
+          btnP.classList.add("text-slate-400");
+          renderLabaChart();
+        }
+      };
+
+      // -- Maps Logic --
+      window.openMap = (lat, lng, driver, barang) => {
+        document.getElementById("modalMaps").classList.remove("hidden");
+        document.getElementById("modal-title-driver").innerText =
+          `Pelacakan: ${driver}`;
+        document.getElementById("modal-desc-barang").innerText =
+          `Logistik: ${barang}`;
+
+        setTimeout(() => {
+          if (!map) {
+            map = L.map("map").setView([lat, lng], 13);
+            L.tileLayer(
+              "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            ).addTo(map);
+            marker = L.marker([lat, lng]).addTo(map);
+          } else {
+            map.setView([lat, lng], 13);
+            marker.setLatLng([lat, lng]);
+          }
+          map.invalidateSize();
+        }, 300);
+      };
+
+      window.closeMap = () =>
+        document.getElementById("modalMaps").classList.add("hidden");
+
+      // -- Profit Analysis Logic --
+      function renderLabaChart() {
+        const ctx = document.getElementById("labaChart").getContext("2d");
+        if (chartInstance) chartInstance.destroy();
+
+        // Kalkulasi dinamis dari data
+        const labaHarian = {};
+        let totalSemua = 0;
+        listBarang.forEach((i) => {
+          const profit = (i.hrgJual - i.hrgBeli) * i.qty;
+          labaHarian[i.fullDate] = (labaHarian[i.fullDate] || 0) + profit;
+          totalSemua += profit;
+        });
+
+        document.getElementById("total-laba-summary").innerText =
+          formatIDR(totalSemua);
+
+        chartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: Object.keys(labaHarian),
+            datasets: [
+              {
+                data: Object.values(labaHarian),
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                fill: true,
+                tension: 0.4,
+                borderWidth: 4,
+                pointRadius: 6,
+                pointBackgroundColor: "#fff",
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } },
+          },
+        });
+      }
+
+      // -- Filter Logic --
+      document.getElementById("searchBarang").addEventListener("input", (e) => {
+        const v = e.target.value.toLowerCase();
+        const filtered = listBarang.filter(
+          (i) =>
+            i.nama.toLowerCase().includes(v) ||
+            i.driver.toLowerCase().includes(v),
+        );
+        renderTable(filtered);
+      });
+
+      initPage();
+    </script>
+  </body>
+</html>
