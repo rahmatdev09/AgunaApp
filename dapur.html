@@ -2,179 +2,265 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Manajemen Dapur - Aguna</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
     <style>
-      .glass {
-        opacity: 0.6;
-        backdrop-filter: blur(10px);
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: #f8fafc;
+        height: 100vh;
+        overflow: hidden; /* Mencegah double scroll pada body */
       }
+      .sidebar {
+        width: 280px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background: #061e49;
+        z-index: 100;
+      }
+      .logo-box {
+        background: #f59e0b;
+        padding: 0.5rem;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: #000000;
+      }
+      .main-content {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 1.25rem;
+        transition: all 0.3s;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+      }
+      .nav-link.active {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+      }
+      .bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #f1f5f9;
+        padding: 0.75rem;
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+        z-index: 200;
+        justify-content: space-around;
+        box-shadow: 0 -10px 20px rgba(0,0,0,0.05);
+      }
+      .bottom-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 10px;
+        font-weight: bold;
+        color: #94a3b8;
+      }
+      .bottom-nav a.active {
+        color: #3b82f6;
+      }
+
+      @media (max-width: 1024px) {
+        .sidebar {
+          display: none !important;
+        }
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+        }
+        main {
+          padding-bottom: 120px !important; /* Ruang agar kartu terakhir tidak tertutup navbar */
+        }
+        .bottom-nav {
+          display: flex;
+        }
+        header {
+          padding: 1.5rem !important;
+          flex-direction: column;
+          align-items: flex-start !important;
+          gap: 1rem;
+        }
+        .desktop-table { display: none; }
+        .mobile-cards { display: grid; }
+        .desktop-pagination { display: none; }
+        .mobile-pagination { display: flex; }
+      }
+
+      @media (min-width: 1025px) {
+        .mobile-cards { display: none; }
+        .mobile-pagination { display: none; }
+      }
+
       .row-hover:hover {
         transform: translateY(-2px);
         transition: all 0.2s;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       }
+      .loader-spinner {
+        width: 16px; height: 16px;
+        border: 2px solid transparent;
+        border-top-color: currentColor;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        display: inline-block;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .table-loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3b82f6;
+        border-radius: 50%;
+        width: 40px; height: 40px;
+        animation: spin 1s linear infinite;
+      }
     </style>
   </head>
-  <body class="bg-[#f8fafc] flex h-screen overflow-hidden">
-    <aside
-      class="w-72 bg-slate-900 text-white flex flex-col shrink-0 transition-all"
-    >
-      <div class="p-8 text-2xl font-black tracking-tighter text-indigo-400">
-        AGUNA<span class="text-white">SYS</span>
+  <body class="flex">
+    <aside class="sidebar flex flex-col p-6 text-white shadow-2xl">
+      <div class="flex items-center gap-4 mb-12 px-2">
+        <div class="logo-box">
+          <i class="fa-solid fa-scale-balanced text-black text-xl"></i>
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-xl font-black italic tracking-tighter leading-none">AGUNA</h1>
+          <span class="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase">Koperasi App</span>
+        </div>
       </div>
-      <nav class="flex-grow px-4 space-y-1">
-        <a
-          href="index.html"
-          class="flex items-center py-3 px-4 rounded-xl text-slate-400 hover:bg-slate-800 transition-all group"
-        >
-          <i class="fas fa-grid-2 mr-3 group-hover:text-indigo-400"></i>
-          Dashboard
-        </a>
-        <a
-          href="dapur.html"
-          class="flex items-center py-3 px-4 rounded-xl bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 shadow-lg shadow-indigo-600/5"
-        >
-          <i class="fas fa-utensils mr-3"></i> Menu Dapur
-        </a>
+      <nav class="flex-1 space-y-2">
+        <a href="index.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5"></i> Dashboard</a>
+        <a href="barang.html" class="nav-link"><i class="fa-solid fa-box w-5"></i> Master Barang</a>
+        <a href="transaksi.html" class="nav-link"><i class="fa-solid fa-receipt w-5"></i> Transaksi</a>
+        <a href="dapur.html" class="nav-link active"><i class="fa-solid fa-utensils w-5"></i> Dapur</a>
+        <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear w-5"></i> Pengaturan</a>
       </nav>
+      <div class="mt-auto pt-6 border-t border-white/10">
+        <div class="flex items-center gap-3 px-2 mb-6">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-bold text-[#061e49] shadow-lg">
+            <span id="initials">??</span>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-white truncate w-32" id="sideUserName">Loading...</p>
+            <p class="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Administrator</p>
+          </div>
+        </div>
+        <button onclick="logout()" class="w-full bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white p-4 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-3">
+          <i class="fa-solid fa-power-off"></i> KELUAR SISTEM
+        </button>
+      </div>
     </aside>
 
-    <div class="flex-1 flex flex-col">
-      <header
-        class="h-20 bg-white/80 glass border-b flex items-center justify-between px-10 sticky top-0 z-10"
-      >
-        <div>
-          <h2 class="text-2xl font-bold text-slate-800">Daftar Dapur</h2>
-          <p class="text-sm text-slate-500">
-            Kelola dan pantau semua unit dapur
-          </p>
+    <nav class="bottom-nav">
+      <a href="index.html"><i class="fa-solid fa-chart-pie text-lg"></i><span>Home</span></a>
+      <a href="barang.html"><i class="fa-solid fa-box text-lg"></i><span>Barang</span></a>
+      <a href="transaksi.html"><i class="fa-solid fa-receipt text-lg"></i><span>Transaksi</span></a>
+      <a href="dapur.html" class="active"><i class="fa-solid fa-utensils text-lg"></i><span>Dapur</span></a>
+      <a href="settings.html"><i class="fa-solid fa-gear text-lg"></i><span>Setting</span></a>
+    </nav>
+
+    <div class="main-content">
+      <header class="bg-white/80 backdrop-blur-md border-b flex items-center justify-between px-10 shrink-0 lg:h-20">
+        <div class="min-w-0">
+          <h2 class="text-2xl font-black text-[#061e49] italic uppercase truncate">DAFTAR DAPUR</h2>
+          <p class="text-sm text-slate-500 font-medium truncate">Kelola unit dapur</p>
         </div>
-        <button
-          onclick="toggleModal(true)"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-indigo-200 transition-all flex items-center scale-95 hover:scale-100"
-        >
-          <i class="fas fa-plus-circle mr-2"></i> Unit Baru
+        <button onclick="toggleModal(true)" class="bg-[#061e49] hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-xs transition-all shadow-xl shadow-indigo-100 flex items-center shrink-0 w-full sm:w-auto justify-center">
+          <i class="fas fa-plus mr-2"></i> <span>UNIT BARU</span>
         </button>
       </header>
 
-      <main class="flex-1 overflow-y-auto p-10">
-        <div
-          class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-        >
-          <table class="w-full text-left">
-            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500">
-              <tr>
-                <th
-                  class="px-8 py-4 text-xs font-bold uppercase tracking-wider"
-                >
-                  UID
-                </th>
-                <th
-                  class="px-8 py-4 text-xs font-bold uppercase tracking-wider"
-                >
-                  Informasi Dapur
-                </th>
-                <th
-                  class="px-8 py-4 text-xs font-bold uppercase tracking-wider"
-                >
-                  Lokasi
-                </th>
-                <th
-                  class="px-8 py-4 text-xs font-bold uppercase tracking-wider"
-                >
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody id="table-body">
-              <tr class="animate-pulse">
-                <td colspan="4" class="p-8 space-y-4">
-                  <div class="h-6 bg-slate-100 rounded-lg w-full"></div>
-                  <div class="h-6 bg-slate-100 rounded-lg w-3/4"></div>
-                  <div class="h-6 bg-slate-100 rounded-lg w-full"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <main class="flex-1 overflow-y-auto p-6 lg:p-10">
+        <div class="desktop-table bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[600px]">
+              <thead class="bg-slate-50 border-b border-slate-200 text-slate-500">
+                <tr>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest">UID</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest">Informasi Dapur</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest">Lokasi</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <tr><td colspan="4" class="p-20 text-center"><div class="table-loader mx-auto"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="desktop-pagination p-6 bg-slate-50 border-t flex items-center justify-between">
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Halaman <span id="currentPage">1</span> dari <span id="totalPages">1</span></span>
+            <div class="flex gap-2">
+              <button id="prevPage" class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl disabled:opacity-50"><i class="fas fa-chevron-left text-xs"></i></button>
+              <button id="nextPage" class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl disabled:opacity-50"><i class="fas fa-chevron-right text-xs"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div id="mobile-card-container" class="mobile-cards grid-cols-1 gap-4">
+           </div>
+
+        <div class="mobile-pagination mt-6 justify-center">
+          <button id="loadMoreBtn" class="bg-white border border-slate-200 text-[#061e49] px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest w-full">
+            Lihat Lebih Banyak <i class="fas fa-chevron-down ml-2"></i>
+          </button>
         </div>
       </main>
     </div>
 
-    <div
-      id="modalDapur"
-      class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50"
-    >
-      <div
-        class="bg-white rounded-3xl w-full max-w-md p-10 shadow-2xl border border-white/20"
-      >
-        <h3 class="text-2xl font-bold text-slate-800 mb-2">Registrasi Dapur</h3>
-        <p class="text-slate-500 mb-8">
-          Masukkan detail unit dapur baru di sini.
-        </p>
+    <div id="modalDapur" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[210] p-4">
+      <div class="bg-white rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl">
+        <h3 class="text-2xl font-black text-[#061e49] mb-2 italic uppercase">Registrasi Dapur</h3>
         <form id="formDapur" class="space-y-4">
-          <input
-            type="text"
-            id="nama"
-            placeholder="Nama Unit"
-            required
-            class="w-full border-slate-200 rounded-xl p-3 bg-slate-50 border outline-indigo-500"
-          />
-          <input
-            type="text"
-            id="lokasi"
-            placeholder="Titik Lokasi"
-            required
-            class="w-full border-slate-200 rounded-xl p-3 bg-slate-50 border outline-indigo-500"
-          />
-          <input
-            type="email"
-            id="email"
-            placeholder="Email Akun"
-            required
-            class="w-full border-slate-200 rounded-xl p-3 bg-slate-50 border outline-indigo-500"
-          />
-          <input
-            type="password"
-            id="pass"
-            placeholder="Password"
-            required
-            class="w-full border-slate-200 rounded-xl p-3 bg-slate-50 border outline-indigo-500"
-          />
+          <input type="text" id="nama" placeholder="Nama Unit" required class="w-full border-slate-200 rounded-2xl p-4 bg-slate-50 border outline-none text-sm" />
+          <input type="text" id="lokasi" placeholder="Titik Lokasi" required class="w-full border-slate-200 rounded-2xl p-4 bg-slate-50 border outline-none text-sm" />
+          <input type="email" id="email" placeholder="Email Akun" required class="w-full border-slate-200 rounded-2xl p-4 bg-slate-50 border outline-none text-sm" />
+          <input type="password" id="pass" placeholder="Password" required class="w-full border-slate-200 rounded-2xl p-4 bg-slate-50 border outline-none text-sm" />
           <div class="flex gap-4 mt-8">
-            <button
-              type="button"
-              onclick="toggleModal(false)"
-              class="flex-1 py-3 text-slate-400 font-bold"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              id="btnSimpan"
-              class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-100"
-            >
-              Simpan
-            </button>
+            <button type="button" onclick="toggleModal(false)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Batal</button>
+            <button type="submit" id="btnSimpan" class="flex-1 bg-[#061e49] text-white py-4 rounded-2xl font-black text-[10px] uppercase">Simpan</button>
           </div>
         </form>
       </div>
     </div>
 
+    <div id="modalNotif" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div class="bg-white rounded-[2.5rem] w-full max-w-sm text-center p-10 shadow-2xl">
+        <div id="notifIconBox" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"><i id="notifIcon" class="fas text-3xl"></i></div>
+        <h3 id="notifTitle" class="text-xl font-black mb-2">Pesan</h3>
+        <p id="notifDesc" class="text-sm text-slate-500 mb-8"></p>
+        <div id="notifAction" class="flex flex-col gap-3"></div>
+      </div>
+    </div>
+
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        addDoc,
-        onSnapshot,
-        serverTimestamp,
-      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, where, getDocs, doc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyBuIk0yhnqpcrkt4q_ed9ikJYuo6PJ78aQ",
@@ -187,59 +273,132 @@
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
+      const dapurCol = collection(db, "dapur");
 
-      window.toggleModal = (val) =>
-        document.getElementById("modalDapur").classList.toggle("hidden", !val);
+      let currentPage = 1;
+      let mobileItemsCount = 5;
+      const itemsPerPage = 5;
+      let allData = [];
 
-      onSnapshot(collection(db, "dapur"), (snapshot) => {
-        const tableBody = document.getElementById("table-body");
-        tableBody.innerHTML = "";
+      window.logout = () => { localStorage.clear(); window.location.href = "login.html"; };
+      window.toggleModal = (val) => document.getElementById("modalDapur").classList.toggle("hidden", !val);
 
-        if (snapshot.empty) {
-          tableBody.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-slate-400">Belum ada data unit dapur.</td></tr>`;
-          return;
-        }
-
-        snapshot.forEach((doc) => {
-          const d = doc.data();
-          const docId = doc.id;
-          tableBody.innerHTML += `
-                    <tr class="border-b border-slate-50 row-hover cursor-pointer group" onclick="window.location.href='detail.html?id=${docId}'">
-                        <td class="px-8 py-5 text-sm font-mono text-indigo-500 font-semibold">${d.uid}</td>
-                        <td class="px-8 py-5">
-                            <div class="font-bold text-slate-800">${d.nama}</div>
-                            <div class="text-xs text-slate-500">${d.email}</div>
-                        </td>
-                        <td class="px-8 py-5 text-sm text-slate-600">${d.lokasi}</td>
-                        <td class="px-8 py-5">
-                            <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-all">
-                                Detail <i class="fas fa-chevron-right ml-1"></i>
-                            </span>
-                        </td>
-                    </tr>`;
-        });
+      onSnapshot(query(dapurCol, orderBy("createdAt", "desc")), (snapshot) => {
+        allData = [];
+        snapshot.forEach((doc) => { allData.push({ id: doc.id, ...doc.data() }); });
+        renderDisplay();
       });
 
-      document
-        .getElementById("formDapur")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
+      function renderDisplay() {
+        renderTable();
+        renderCards();
+      }
+
+      function renderTable() {
+        const tableBody = document.getElementById("table-body");
+        const totalPages = Math.ceil(allData.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const paginatedData = allData.slice(startIndex, startIndex + itemsPerPage);
+        
+        tableBody.innerHTML = paginatedData.map(d => `
+          <tr class="border-b border-slate-50 row-hover group hover:bg-slate-50 transition-all">
+            <td class="px-8 py-6 text-sm font-mono text-blue-600 font-bold italic">${d.uid}</td>
+            <td class="px-8 py-6">
+              <div class="font-bold text-[#061e49]">${d.nama}</div>
+              <div class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">${d.email}</div>
+            </td>
+            <td class="px-8 py-6 text-sm text-slate-600 font-medium">${d.lokasi}</td>
+            <td class="px-8 py-6 text-center space-x-2">
+              <button onclick="window.location.href='detail.html?id=${d.id}'" class="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-indigo-100">Detail</button>
+              <button onclick="confirmDelete('${d.id}')" class="bg-rose-50 text-rose-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-rose-100"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        `).join('') || '<tr><td colspan="4" class="p-20 text-center text-slate-300 uppercase text-[10px]">Data Kosong</td></tr>';
+
+        document.getElementById("currentPage").innerText = currentPage;
+        document.getElementById("totalPages").innerText = totalPages || 1;
+        document.getElementById("prevPage").disabled = currentPage === 1;
+        document.getElementById("nextPage").disabled = currentPage === totalPages || totalPages === 0;
+      }
+
+      function renderCards() {
+        const container = document.getElementById("mobile-card-container");
+        const visibleData = allData.slice(0, mobileItemsCount);
+        
+        container.innerHTML = visibleData.map(d => `
+          <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm space-y-4">
+            <div class="flex justify-between items-start">
+              <span class="text-[10px] font-mono font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">${d.uid}</span>
+              <div class="flex gap-2">
+                <button onclick="window.location.href='detail.html?id=${d.id}'" class="w-8 h-8 flex items-center justify-center bg-indigo-50 text-indigo-600 rounded-full"><i class="fas fa-eye"></i></button>
+                <button onclick="confirmDelete('${d.id}')" class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-500 rounded-full"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-black text-[#061e49] uppercase tracking-tight">${d.nama}</h4>
+              <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${d.email}</p>
+            </div>
+            <div class="pt-4 border-t border-slate-50 flex items-center gap-2 text-slate-500">
+              <i class="fas fa-location-dot text-xs"></i><span class="text-xs font-medium">${d.lokasi}</span>
+            </div>
+          </div>
+        `).join('') || '<div class="text-center py-10 text-slate-300 uppercase text-[10px]">Data Kosong</div>';
+
+        document.getElementById("loadMoreBtn").parentElement.style.display = (mobileItemsCount >= allData.length) ? "none" : "flex";
+      }
+
+      document.getElementById("loadMoreBtn").onclick = () => { mobileItemsCount += itemsPerPage; renderCards(); };
+      document.getElementById("prevPage").onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); } };
+      document.getElementById("nextPage").onclick = () => { if (currentPage < Math.ceil(allData.length / itemsPerPage)) { currentPage++; renderTable(); } };
+
+      document.getElementById("formDapur").onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("btnSimpan");
+        btn.disabled = true; btn.innerHTML = `<span class="loader-spinner"></span>`;
+        try {
           const uid = "AGUNA-" + Math.floor(1000 + Math.random() * 9000);
-          try {
-            await addDoc(collection(db, "dapur"), {
-              uid,
-              nama: document.getElementById("nama").value,
-              lokasi: document.getElementById("lokasi").value,
-              email: document.getElementById("email").value,
-              password: document.getElementById("pass").value,
-              createdAt: serverTimestamp(),
-            });
-            toggleModal(false);
-            e.target.reset();
-          } catch (err) {
-            console.error(err);
-          }
+          await addDoc(dapurCol, {
+            uid,
+            nama: document.getElementById("nama").value,
+            lokasi: document.getElementById("lokasi").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("pass").value,
+            createdAt: serverTimestamp(),
+          });
+          toggleModal(false); e.target.reset();
+          showNotif("success", "Berhasil", "Unit dapur baru terdaftar.");
+        } catch (err) { showNotif("alert", "Error", "Gagal simpan."); }
+        btn.disabled = false; btn.textContent = "SIMPAN";
+      };
+
+      window.confirmDelete = (id) => {
+        showNotif("alert", "Hapus Unit?", "Data akan dihapus permanen.", "Hapus", async () => {
+          await deleteDoc(doc(db, "dapur", id));
+          showNotif("success", "Terhapus", "Unit berhasil dihapus.");
         });
+      };
+
+      window.showNotif = (type, title, desc, actionLabel = "OKE", actionFunc = null) => {
+        const m = document.getElementById("modalNotif");
+        document.getElementById("notifIconBox").className = `w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${type === "success" ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"}`;
+        document.getElementById("notifIcon").className = `fas ${type === "success" ? "fa-check" : "fa-exclamation"} text-3xl`;
+        document.getElementById("notifTitle").innerText = title;
+        document.getElementById("notifDesc").innerText = desc;
+        const action = document.getElementById("notifAction");
+        if (actionFunc) {
+          action.innerHTML = `<button id="cBtn" class="w-full py-4 rounded-2xl font-black bg-rose-600 text-white uppercase text-[10px]">Konfirmasi</button><button onclick="closeNotif()" class="w-full py-4 text-slate-400 font-bold uppercase text-[10px]">Batal</button>`;
+          document.getElementById("cBtn").onclick = () => { actionFunc(); closeNotif(); };
+        } else {
+          action.innerHTML = `<button onclick="closeNotif()" class="w-full py-4 rounded-2xl font-black bg-slate-900 text-white uppercase text-[10px]">${actionLabel}</button>`;
+        }
+        m.classList.remove("hidden");
+      };
+      window.closeNotif = () => document.getElementById("modalNotif").classList.add("hidden");
+
+      // Init Profile
+      const name = localStorage.getItem("userEmail") || "Admin";
+      document.getElementById("sideUserName").textContent = name;
+      document.getElementById("initials").textContent = name.substring(0, 2).toUpperCase();
     </script>
   </body>
 </html>
