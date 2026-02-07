@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Master Barang - Naila Jasmin</title>
+    <title>Master Barang - Aguna APP</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link
@@ -18,28 +18,112 @@
     <style>
       body {
         font-family: "Inter", sans-serif;
-        background-color: #fcfdfe;
+        background-color: #f8fafc;
       }
       :root {
         --primary: #061e49;
       }
-      .bg-primary {
-        background-color: var(--primary);
+      .sidebar {
+        width: 280px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background: #061e49;
+        z-index: 100;
       }
-      .text-primary {
-        color: var(--primary);
+      .main-content {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+        min-height: 100vh;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 1.25rem;
+        transition: all 0.3s;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+      }
+      .nav-link.active {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
       }
 
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
+      /* Mobile Bottom Nav */
+      .bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 0.75rem 0.25rem;
+        border-top: 1px solid #e2e8f0;
+        z-index: 200;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1);
       }
-      ::-webkit-scrollbar-track {
-        background: #f1f1f1;
+      .bottom-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #94a3b8;
+        gap: 0.25rem;
+        flex: 1;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #061e4933;
-        border-radius: 10px;
+      .bottom-nav a.active {
+        color: #3b82f6;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none !important;
+        }
+        /* Padding-bottom ditingkatkan menjadi 180px agar konten benar-benar di atas navbar */
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+          padding: 1.5rem 1.5rem 180px 1.5rem;
+        }
+        .bottom-nav {
+          display: flex;
+        }
+        .desktop-table,
+        .desktop-pagination {
+          display: none !important;
+        }
+        .mobile-cards {
+          display: grid;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+      }
+      @media (min-width: 769px) {
+        .mobile-cards {
+          display: none;
+        }
+        .mobile-load-more {
+          display: none !important;
+        }
+      }
+
+      .logo-box {
+        background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
       }
 
       @keyframes fadeSlideUp {
@@ -55,167 +139,268 @@
       .animate-fadeSlideUp {
         animation: fadeSlideUp 0.4s ease-out forwards;
       }
+
+      .loader {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
-  <body class="min-h-screen text-gray-800">
-    <nav class="bg-primary text-white sticky top-0 z-50 shadow-lg">
-      <div
-        class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center"
-      >
-        <div class="flex items-center gap-3">
-          <div class="bg-white p-2 rounded-xl">
-            <img
-              src="icon/Picture1__3_-removebg-preview.png"
-              alt="Logo"
-              class="w-8 h-8"
-            />
-          </div>
-          <h1 class="text-xl font-black italic tracking-tighter">
-            NAILA JASMIN
-          </h1>
+  <body class="flex">
+    <aside class="sidebar flex flex-col p-6 text-white shadow-2xl">
+      <div class="flex items-center gap-4 mb-12 px-2">
+        <div class="logo-box">
+          <i class="fa-solid fa-scale-balanced text-[#061e49] text-xl"></i>
         </div>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col">
+          <h1 class="text-xl font-black italic tracking-tighter leading-none">
+            AGUNA
+          </h1>
           <span
-            id="displayUserName"
-            class="text-sm font-medium opacity-80 hidden md:block"
-            >Admin</span
+            class="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase"
+            >Koperasi App</span
           >
-          <button
-            id="btnLogout"
-            class="hover:bg-red-500 bg-red-500/10 text-red-100 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
-          >
-            <i class="fa-solid fa-power-off"></i> Keluar
-          </button>
         </div>
       </div>
+
+      <nav class="flex-1 space-y-2">
+        <a href="index.html" class="nav-link">
+          <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+        </a>
+        <a href="barang.html" class="nav-link active">
+          <i class="fa-solid fa-box w-5"></i> Master Barang
+        </a>
+        <a href="transaksi.html" class="nav-link">
+          <i class="fa-solid fa-receipt w-5"></i> Transaksi
+        </a>
+        <a href="dapur.html" class="nav-link">
+          <i class="fa-solid fa-utensils w-5"></i> Dapur
+        </a>
+        <a href="settings.html" class="nav-link">
+          <i class="fa-solid fa-gear w-5"></i> Pengaturan
+        </a>
+      </nav>
+
+      <div class="mt-auto pt-6 border-t border-white/10">
+        <div class="flex items-center gap-3 px-2 mb-6">
+          <div
+            class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-bold text-[#061e49] shadow-lg"
+          >
+            <span id="initials">AD</span>
+          </div>
+          <div>
+            <p
+              class="text-xs font-bold text-white truncate w-32"
+              id="sideUserName"
+            >
+              Admin
+            </p>
+            <p
+              class="text-[10px] text-amber-500 font-bold uppercase tracking-widest"
+            >
+              Administrator
+            </p>
+          </div>
+        </div>
+        <button
+          onclick="logout()"
+          class="w-full bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white p-4 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-3"
+        >
+          <i class="fa-solid fa-power-off"></i> KELUAR SISTEM
+        </button>
+      </div>
+    </aside>
+
+    <nav class="bottom-nav">
+      <a href="index.html"
+        ><i class="fa-solid fa-chart-pie text-lg"></i><span>Home</span></a
+      >
+      <a href="barang.html" class="active"
+        ><i class="fa-solid fa-box text-lg"></i><span>Barang</span></a
+      >
+      <a href="transaksi.html"
+        ><i class="fa-solid fa-receipt text-lg"></i><span>Transaksi</span></a
+      >
+      <a href="dapur.html"
+        ><i class="fa-solid fa-utensils text-lg"></i><span>Dapur</span></a
+      >
+      <a href="settings.html"
+        ><i class="fa-solid fa-gear text-lg"></i><span>Setting</span></a
+      >
     </nav>
 
-    <main class="max-w-7xl mx-auto p-6 md:p-10">
-      <div
+    <main class="main-content p-6 md:p-10">
+      <header
         class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10"
       >
         <div>
-          <nav
-            class="flex text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 gap-2"
+          <h2
+            class="text-3xl font-black text-[#061e49] tracking-tight uppercase"
           >
-            <span>Dashboard</span>
-            <i class="fa-solid fa-chevron-right text-[8px] self-center"></i>
-            <span class="text-primary">Master Barang</span>
-          </nav>
-          <h2 class="text-4xl font-extrabold text-primary tracking-tight">
-            Inventaris Barang
+            Master Barang
           </h2>
-          <p class="text-gray-500 mt-1">
-            Kelola data stok dan penetapan harga jual dapur.
+          <p class="text-gray-400 font-medium text-sm">
+            Kelola daftar inventaris
+            <span class="text-amber-600 font-bold">Koperasi Aguna</span>.
           </p>
         </div>
         <button
           id="btnOpenModal"
-          class="bg-primary hover:bg-blue-900 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl shadow-blue-900/30 transition-all transform active:scale-95 flex items-center gap-3"
+          class="bg-[#061e49] hover:bg-blue-900 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl transition-all flex items-center gap-3 active:scale-95"
         >
-          <i class="fa-solid fa-plus-circle text-xl"></i>
-          Tambah Barang Baru
+          <i class="fa-solid fa-circle-plus text-xl"></i> Tambah Barang
+        </button>
+      </header>
+
+      <div
+        id="loadingState"
+        class="flex flex-col items-center justify-center py-20"
+      >
+        <div class="loader"></div>
+        <p class="mt-4 text-gray-400 font-medium">Memuat data...</p>
+      </div>
+
+      <div
+        id="emptyState"
+        class="hidden flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border-2 border-dashed border-gray-100"
+      >
+        <i class="fa-solid fa-box-open text-6xl text-gray-200 mb-4"></i>
+        <p class="text-gray-400 font-bold text-lg">
+          Belum ada barang terdaftar
+        </p>
+      </div>
+
+      <div
+        id="desktopContainer"
+        class="hidden desktop-table bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden"
+      >
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-50/50 border-b border-gray-100">
+            <tr>
+              <th
+                class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center"
+              >
+                No
+              </th>
+              <th
+                class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+              >
+                Nama Produk
+              </th>
+              <th
+                class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right"
+              >
+                Harga Beli
+              </th>
+              <th
+                class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center"
+              >
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            id="barangTableBody"
+            class="divide-y divide-gray-50 text-sm"
+          ></tbody>
+        </table>
+      </div>
+
+      <div id="mobileContainer" class="mobile-cards"></div>
+
+      <div
+        id="mobileLoadMoreContainer"
+        class="mobile-load-more hidden mt-6 flex justify-center"
+      >
+        <button
+          id="btnLoadMore"
+          class="w-full bg-white border-2 border-gray-100 text-[#061e49] py-4 rounded-2xl font-bold shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all"
+        >
+          Lihat Lebih Banyak <i class="fa-solid fa-chevron-down text-xs"></i>
         </button>
       </div>
 
       <div
-        class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden animate-fadeSlideUp"
+        id="paginationContainer"
+        class="desktop-pagination hidden mt-8 flex items-center justify-center gap-4"
       >
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="bg-gray-50/50 border-b border-gray-100">
-              <tr>
-                <th
-                  class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]"
-                >
-                  No
-                </th>
-                <th
-                  class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]"
-                >
-                  UID Barang
-                </th>
-                <th
-                  class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]"
-                >
-                  Nama Barang
-                </th>
-                <th
-                  class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]"
-                >
-                  Harga Jual
-                </th>
-                <th
-                  class="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] text-center"
-                >
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody id="barangTableBody" class="divide-y divide-gray-50 text-sm">
-              <tr>
-                <td colspan="5" class="px-8 py-20 text-center text-gray-400">
-                  <i class="fa-solid fa-spinner animate-spin text-2xl mb-2"></i>
-                  <p>Memuat data barang...</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <button
+          id="prevPage"
+          class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-[#061e49] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-all shadow-sm"
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span
+          id="pageInfo"
+          class="text-sm font-bold text-[#061e49] bg-white px-6 py-3 rounded-xl border border-gray-100 shadow-sm"
+          >Halaman 1</span
+        >
+        <button
+          id="nextPage"
+          class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-[#061e49] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-all shadow-sm"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
       </div>
     </main>
 
     <div
-      id="modalTambah"
-      class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/40 backdrop-blur-md"
+      id="modalForm"
+      class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#061e49]/40 backdrop-blur-sm"
     >
       <div
-        class="bg-white w-full max-w-md rounded-[3rem] shadow-2xl p-10 relative animate-fadeSlideUp"
+        class="bg-white w-full max-w-md rounded-[3rem] shadow-2xl p-10 animate-fadeSlideUp"
       >
         <div class="mb-8">
-          <h3 class="text-2xl font-black text-primary italic">TAMBAH BARANG</h3>
-          <p class="text-gray-400 text-sm">
-            Data akan tersimpan otomatis ke sistem.
-          </p>
+          <h3
+            id="modalTitle"
+            class="text-2xl font-black text-[#061e49] uppercase italic"
+          >
+            Tambah Data
+          </h3>
         </div>
-
-        <form id="formTambahBarang" class="space-y-6">
-          <div class="space-y-2">
+        <form id="formBarang" class="space-y-5">
+          <input type="hidden" id="editId" />
+          <div class="space-y-1">
             <label
               class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1"
-              >UID Barang (Otomatis)</label
+              >UID Barang</label
             >
-            <div class="relative">
-              <i
-                class="fa-solid fa-fingerprint absolute left-4 top-1/2 -translate-y-1/2 text-blue-500"
-              ></i>
-              <input
-                type="text"
-                id="uidBarang"
-                readonly
-                class="w-full bg-blue-50/50 border border-blue-100 rounded-2xl py-4 pl-12 pr-4 font-mono font-bold text-blue-600 outline-none cursor-not-allowed"
-              />
-            </div>
+            <input
+              type="text"
+              id="uidBarang"
+              readonly
+              class="w-full bg-blue-50 border border-blue-100 rounded-2xl py-4 px-5 font-mono font-bold text-blue-600 outline-none"
+            />
           </div>
-
-          <div class="space-y-2">
+          <div class="space-y-1">
             <label
               class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1"
-              >Nama Produk</label
+              >Nama Barang</label
             >
             <input
               type="text"
               id="namaBarang"
               required
-              placeholder="Contoh: Beras Premium"
-              class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 px-5 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+              class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 px-5 focus:border-blue-500 outline-none transition-all"
             />
           </div>
-
-          <div class="space-y-2">
+          <div class="space-y-1">
             <label
               class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1"
-              >Harga Jual Satuan</label
+              >Harga Beli</label
             >
             <div class="relative">
               <span
@@ -223,33 +408,79 @@
                 >Rp</span
               >
               <input
-                type="number"
-                id="hargaJual"
+                type="text"
+                id="hargaBeliDisplay"
                 required
-                placeholder="0"
-                class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 pl-12 pr-5 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+                class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 pl-12 pr-5 focus:border-blue-500 outline-none transition-all"
               />
             </div>
           </div>
-
           <div class="flex gap-3 pt-4">
             <button
               type="button"
-              id="btnCloseModal"
-              class="flex-1 bg-gray-100 text-gray-500 py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all"
+              onclick="closeModal('modalForm')"
+              class="flex-1 bg-gray-100 text-gray-500 py-4 rounded-2xl font-bold hover:bg-gray-200"
             >
               Batal
             </button>
             <button
               type="submit"
               id="btnSimpan"
-              class="flex-[2] bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-900/20 hover:bg-blue-900 transition-all flex items-center justify-center gap-2"
+              class="flex-[2] bg-[#061e49] text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-blue-900 transition-all flex items-center justify-center gap-2"
             >
-              <span id="btnText">Simpan Data</span>
-              <i id="btnIcon" class="fa-solid fa-paper-plane"></i>
+              <span id="btnSimpanText">Simpan Data</span>
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div
+      id="modalConfirm"
+      class="hidden fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+    >
+      <div
+        class="bg-white w-full max-w-xs rounded-[2.5rem] p-8 text-center animate-fadeSlideUp"
+      >
+        <div
+          class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"
+        >
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h4 class="text-xl font-black text-gray-800 mb-2">Hapus Item?</h4>
+        <div class="flex gap-3">
+          <button
+            onclick="closeModal('modalConfirm')"
+            class="flex-1 py-3 bg-gray-100 rounded-xl font-bold text-gray-500"
+          >
+            Batal
+          </button>
+          <button
+            id="confirmDeleteBtn"
+            class="flex-1 py-3 bg-red-500 rounded-xl font-bold text-white"
+          >
+            Ya, Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="modalSuccess"
+      class="hidden fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
+    >
+      <div
+        class="bg-white w-full max-w-xs rounded-[2.5rem] p-8 text-center animate-fadeSlideUp"
+      >
+        <div
+          class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"
+        >
+          <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <h4 class="text-xl font-black text-gray-800 mb-2">Berhasil!</h4>
+        <p id="successMsg" class="text-gray-500 text-sm mb-4">
+          Data telah diperbarui.
+        </p>
       </div>
     </div>
 
@@ -259,117 +490,235 @@
         getFirestore,
         collection,
         addDoc,
-        doc,
+        updateDoc,
         deleteDoc,
+        doc,
         onSnapshot,
         query,
         orderBy,
       } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
       const firebaseConfig = {
-        apiKey: "AIzaSyBC598epFdcqsFp9cg3y9-Fi40PvpGX44I",
-        authDomain: "nailajasmin-c3d98.firebaseapp.com",
-        projectId: "nailajasmin-c3d98",
-        storageBucket: "nailajasmin-c3d98.firebasestorage.app",
-        messagingSenderId: "179905162603",
-        appId: "1:179905162603:web:f39f966d49b4719eeb302e",
+        apiKey: "AIzaSyBuIk0yhnqpcrkt4q_ed9ikJYuo6PJ78aQ",
+        authDomain: "koperasi-aguna-3a14a.firebaseapp.com",
+        projectId: "koperasi-aguna-3a14a",
+        storageBucket: "koperasi-aguna-3a14a.firebasestorage.app",
+        messagingSenderId: "668307732730",
+        appId: "1:668307732730:web:c2457d9a690eb303c3f143",
       };
-
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
+      const colRef = collection(db, "master_barang");
 
-      // --- AUTH CHECK ---
+      let allData = [];
+      let currentPage = 1;
+      let mobileVisibleItems = 5;
+      const itemsPerPage = 5;
+      let deleteTargetId = null;
 
-      // --- GENERATE UID ---
-      const generateUID = () => {
-        const str = Math.random().toString(36).substring(2, 6).toUpperCase();
-        const num = Date.now().toString().slice(-4);
-        return `NJ-${num}${str}`;
-      };
+      const name = localStorage.getItem("userEmail") || "Admin";
+      document.getElementById("sideUserName").textContent = name;
+      document.getElementById("initials").textContent = name
+        .substring(0, 2)
+        .toUpperCase();
 
-      // --- DOM ELEMENTS ---
-      const modal = document.getElementById("modalTambah");
-      const form = document.getElementById("formTambahBarang");
-      const tableBody = document.getElementById("barangTableBody");
-      const uidInput = document.getElementById("uidBarang");
+      const formatRupiah = (val) => "Rp " + Number(val).toLocaleString("id-ID");
+      const cleanRupiah = (val) => val.replace(/[^0-9]/g, "");
+      const generateUID = () =>
+        `NJ-${Date.now().toString().slice(-4)}${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
 
-      // --- MODAL ACTIONS ---
-      document.getElementById("btnOpenModal").onclick = () => {
-        uidInput.value = generateUID();
+      window.closeModal = (id) =>
+        document.getElementById(id).classList.add("hidden");
+      window.showModal = (id) =>
+        document.getElementById(id).classList.remove("hidden");
+
+      function showToast(msg) {
+        const modal = document.getElementById("modalSuccess");
+        document.getElementById("successMsg").innerText = msg;
         modal.classList.remove("hidden");
-      };
-      document.getElementById("btnCloseModal").onclick = () =>
-        modal.classList.add("hidden");
+        setTimeout(() => modal.classList.add("hidden"), 2000);
+      }
 
-      // --- CREATE ---
-      form.addEventListener("submit", async (e) => {
+      const priceInput = document.getElementById("hargaBeliDisplay");
+      priceInput.addEventListener("input", (e) => {
+        let clean = cleanRupiah(e.target.value);
+        e.target.value = clean ? Number(clean).toLocaleString("id-ID") : "";
+      });
+
+      document.getElementById("btnOpenModal").onclick = () => {
+        document.getElementById("formBarang").reset();
+        document.getElementById("editId").value = "";
+        document.getElementById("uidBarang").value = generateUID();
+        document.getElementById("modalTitle").innerText = "Tambah Data";
+        showModal("modalForm");
+      };
+
+      document.getElementById("formBarang").onsubmit = async (e) => {
         e.preventDefault();
-        const btn = document.getElementById("btnSimpan");
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i>`;
+        const id = document.getElementById("editId").value;
+        const btnSimpan = document.getElementById("btnSimpan");
+        const btnSimpanText = document.getElementById("btnSimpanText");
+
+        btnSimpan.disabled = true;
+        btnSimpan.classList.add("opacity-70", "cursor-not-allowed");
+        btnSimpanText.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Memproses...`;
+
+        const data = {
+          uid: document.getElementById("uidBarang").value,
+          nama: document.getElementById("namaBarang").value,
+          hargaBeli: Number(cleanRupiah(priceInput.value)),
+          updatedAt: new Date().toISOString(),
+        };
 
         try {
-          await addDoc(collection(db, "master_barang"), {
-            uid: uidInput.value,
-            nama: document.getElementById("namaBarang").value.trim(),
-            hargaJual: Number(document.getElementById("hargaJual").value),
-            createdAt: new Date().toISOString(),
-          });
-          form.reset();
-          modal.classList.add("hidden");
+          if (id) {
+            await updateDoc(doc(db, "master_barang", id), data);
+            showToast("Barang diperbarui!");
+          } else {
+            data.createdAt = new Date().toISOString();
+            await addDoc(colRef, data);
+            showToast("Barang ditambahkan!");
+          }
+          closeModal("modalForm");
         } catch (err) {
-          alert("Gagal menyimpan: " + err.message);
+          alert(err.message);
         } finally {
-          btn.disabled = false;
-          btn.innerHTML = `<span>Simpan Data</span> <i class="fa-solid fa-paper-plane"></i>`;
-        }
-      });
-
-      // --- READ (Real-time) ---
-      const q = query(
-        collection(db, "master_barang"),
-        orderBy("createdAt", "desc"),
-      );
-      onSnapshot(q, (snapshot) => {
-        tableBody.innerHTML = snapshot.empty
-          ? `<tr><td colspan="5" class="px-8 py-20 text-center text-gray-400 italic">Belum ada data barang.</td></tr>`
-          : "";
-
-        let i = 1;
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const tr = document.createElement("tr");
-          tr.className = "hover:bg-gray-50/80 transition-all group";
-          tr.innerHTML = `
-                    <td class="px-8 py-6 text-gray-400 font-medium">${i++}</td>
-                    <td class="px-8 py-6">
-                        <span class="bg-blue-50 text-blue-600 font-mono text-[11px] font-bold px-3 py-1.5 rounded-lg border border-blue-100 italic">
-                            ${data.uid}
-                        </span>
-                    </td>
-                    <td class="px-8 py-6 font-bold text-gray-800">${data.nama}</td>
-                    <td class="px-8 py-6">
-                        <span class="text-green-600 font-extrabold">Rp ${data.hargaJual.toLocaleString("id-ID")}</span>
-                    </td>
-                    <td class="px-8 py-6 text-center">
-                        <button onclick="deleteItem('${docSnap.id}', '${data.nama}')" class="w-10 h-10 rounded-xl text-gray-300 hover:text-red-600 hover:bg-red-50 transition-all">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                `;
-          tableBody.appendChild(tr);
-        });
-      });
-
-      // --- DELETE ---
-      window.deleteItem = async (id, name) => {
-        if (confirm(`Hapus data "${name}"?`)) {
-          await deleteDoc(doc(db, "master_barang", id));
+          btnSimpan.disabled = false;
+          btnSimpan.classList.remove("opacity-70", "cursor-not-allowed");
+          btnSimpanText.innerHTML = "Simpan Data";
         }
       };
 
-      // --- LOGOUT ---
-      document.getElementById("btnLogout").onclick = () => {
+      function renderData() {
+        const tableBody = document.getElementById("barangTableBody");
+        const mobileContainer = document.getElementById("mobileContainer");
+        const desktopPagination = document.getElementById(
+          "paginationContainer",
+        );
+        const mobileLoadMore = document.getElementById(
+          "mobileLoadMoreContainer",
+        );
+        const empty = document.getElementById("emptyState");
+
+        tableBody.innerHTML = "";
+        mobileContainer.innerHTML = "";
+
+        if (allData.length === 0) {
+          empty.classList.remove("hidden");
+          document.getElementById("desktopContainer").classList.add("hidden");
+          desktopPagination.classList.add("hidden");
+          mobileLoadMore.classList.add("hidden");
+          return;
+        }
+
+        empty.classList.add("hidden");
+        document.getElementById("desktopContainer").classList.remove("hidden");
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const desktopItems = allData.slice(start, end);
+
+        desktopItems.forEach((docSnap, index) => {
+          const item = docSnap.data();
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-gray-50/80 transition-all";
+          tr.innerHTML = `
+            <td class="px-8 py-6 text-center text-gray-400 font-medium">${start + index + 1}</td>
+            <td class="px-8 py-6 font-bold text-[#061e49]">
+               <div class="text-[10px] font-mono text-blue-500 uppercase">${item.uid}</div>
+               ${item.nama}
+            </td>
+            <td class="px-8 py-6 text-right font-black text-green-600">${formatRupiah(item.hargaBeli)}</td>
+            <td class="px-8 py-6 text-center space-x-2">
+              <button onclick="editItem('${docSnap.id}', '${item.uid}', '${item.nama}', ${item.hargaBeli})" class="text-blue-400 hover:text-blue-600 p-2"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button onclick="confirmDelete('${docSnap.id}')" class="text-gray-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        const totalPages = Math.ceil(allData.length / itemsPerPage);
+        document.getElementById("pageInfo").innerText =
+          `Halaman ${currentPage} dari ${totalPages}`;
+        document.getElementById("prevPage").disabled = currentPage === 1;
+        document.getElementById("nextPage").disabled =
+          currentPage === totalPages;
+
+        const mobileItems = allData.slice(0, mobileVisibleItems);
+        mobileItems.forEach((docSnap) => {
+          const item = docSnap.data();
+          const card = document.createElement("div");
+          card.className =
+            "bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex justify-between items-center animate-fadeSlideUp";
+          card.innerHTML = `
+            <div>
+              <p class="text-[10px] font-mono font-bold text-blue-500">${item.uid}</p>
+              <h4 class="font-bold text-[#061e49] text-lg">${item.nama}</h4>
+              <p class="font-black text-green-600 mt-1">${formatRupiah(item.hargaBeli)}</p>
+            </div>
+            <div class="flex flex-col gap-2">
+              <button onclick="editItem('${docSnap.id}', '${item.uid}', '${item.nama}', ${item.hargaBeli})" class="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="confirmDelete('${docSnap.id}')" class="w-10 h-10 bg-red-50 text-red-500 rounded-full flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `;
+          mobileContainer.appendChild(card);
+        });
+
+        if (allData.length > mobileVisibleItems) {
+          mobileLoadMore.classList.remove("hidden");
+        } else {
+          mobileLoadMore.classList.add("hidden");
+        }
+      }
+
+      document.getElementById("prevPage").onclick = () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderData();
+        }
+      };
+      document.getElementById("nextPage").onclick = () => {
+        if (currentPage < Math.ceil(allData.length / itemsPerPage)) {
+          currentPage++;
+          renderData();
+        }
+      };
+
+      document.getElementById("btnLoadMore").onclick = () => {
+        mobileVisibleItems += 5;
+        renderData();
+      };
+
+      onSnapshot(query(colRef, orderBy("createdAt", "desc")), (snap) => {
+        document.getElementById("loadingState").classList.add("hidden");
+        allData = snap.docs;
+        renderData();
+      });
+
+      window.editItem = (id, uid, nama, harga) => {
+        document.getElementById("editId").value = id;
+        document.getElementById("uidBarang").value = uid;
+        document.getElementById("namaBarang").value = nama;
+        priceInput.value = Number(harga).toLocaleString("id-ID");
+        document.getElementById("modalTitle").innerText = "Edit Data";
+        showModal("modalForm");
+      };
+
+      window.confirmDelete = (id) => {
+        deleteTargetId = id;
+        showModal("modalConfirm");
+      };
+
+      document.getElementById("confirmDeleteBtn").onclick = async () => {
+        if (deleteTargetId) {
+          await deleteDoc(doc(db, "master_barang", deleteTargetId));
+          deleteTargetId = null;
+          closeModal("modalConfirm");
+          showToast("Item dihapus.");
+        }
+      };
+
+      window.logout = () => {
         localStorage.clear();
         window.location.href = "login.html";
       };
