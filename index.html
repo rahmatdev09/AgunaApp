@@ -3,149 +3,326 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - Aguna Admin</title>
+    <title>Dashboard - Aguna APP</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-      .glass {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+      }
+      :root {
+        --primary: #061e49;
+      }
+      .sidebar {
+        width: 280px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background: #061e49;
+        z-index: 100;
+      }
+      .main-content {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+        min-height: 100vh;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 1.25rem;
+        transition: all 0.3s;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+      }
+      .nav-link.active {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+      }
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 2rem;
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s;
       }
       .stat-card:hover {
         transform: translateY(-5px);
-        transition: all 0.3s ease;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Mobile Bottom Nav */
+      .bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 0.75rem 0.5rem;
+        border-top: 1px solid #e2e8f0;
+        z-index: 200;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.05);
+      }
+      .bottom-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #94a3b8;
+        gap: 0.25rem;
+      }
+      .bottom-nav a.active {
+        color: #3b82f6;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none !important;
+        }
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+          padding: 1.5rem 1.5rem 100px 1.5rem;
+        }
+        .bottom-nav {
+          display: flex;
+        }
+      }
+
+      /* Logo Koperasi Style */
+      .logo-box {
+        background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
       }
     </style>
   </head>
-  <body class="bg-[#f8fafc] flex h-screen overflow-hidden">
-    <aside
-      class="w-72 bg-slate-900 text-white flex flex-col shrink-0 transition-all"
-    >
-      <div class="p-8 text-2xl font-black tracking-tighter text-indigo-400">
-        AGUNA<span class="text-white">SYS</span>
+  <body class="flex">
+    <script>
+      if (localStorage.getItem("isLoggedIn") !== "true") {
+        window.location.href = "login.html";
+      }
+    </script>
+
+    <aside class="sidebar flex flex-col p-6 text-white shadow-2xl">
+      <div class="flex items-center gap-4 mb-12 px-2">
+        <div class="logo-box">
+          <i class="fa-solid fa-scale-balanced text-[#061e49] text-xl"></i>
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-xl font-black italic tracking-tighter leading-none">
+            AGUNA
+          </h1>
+          <span
+            class="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase"
+            >Koperasi App</span
+          >
+        </div>
       </div>
-      <nav class="flex-grow px-4 space-y-1">
-        <a
-          href="index.html"
-          class="flex items-center py-3 px-4 rounded-xl bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 shadow-lg shadow-indigo-600/5"
-        >
-          <i class="fas fa-th-large mr-3"></i> Dashboard
+
+      <nav class="flex-1 space-y-2">
+        <a href="index.html" class="nav-link active">
+          <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
         </a>
-        <a
-          href="dapur.html"
-          class="flex items-center py-3 px-4 rounded-xl text-slate-400 hover:bg-slate-800 transition-all group"
-        >
-          <i class="fas fa-utensils mr-3 group-hover:text-indigo-400"></i> Menu
-          Dapur
+        <a href="barang.html" class="nav-link">
+          <i class="fa-solid fa-box w-5"></i> Master Barang
+        </a>
+        <a href="transaksi.html" class="nav-link">
+          <i class="fa-solid fa-receipt w-5"></i> Transaksi
+        </a>
+        <a href="dapur.html" class="nav-link">
+          <i class="fa-solid fa-utensils w-5"></i> Dapur
+        </a>
+        <a href="settings.html" class="nav-link">
+          <i class="fa-solid fa-gear w-5"></i> Settings
         </a>
       </nav>
-      <div class="p-6 border-t border-slate-800">
-        <div class="bg-slate-800 rounded-xl p-4 flex items-center">
+
+      <div class="mt-auto pt-6 border-t border-white/10">
+        <div class="flex items-center gap-3 px-2 mb-6">
           <div
-            class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold"
+            class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-bold text-[#061e49] shadow-lg"
           >
-            A
+            <span id="initials">AD</span>
           </div>
-          <div class="ml-3">
-            <p class="text-xs text-slate-400">Admin</p>
-            <p class="text-sm font-bold">Aguna Koperasi</p>
+          <div>
+            <p
+              class="text-xs font-bold text-white truncate w-32"
+              id="sideUserName"
+            >
+              Admin
+            </p>
+            <p
+              class="text-[10px] text-amber-500 font-bold uppercase tracking-widest"
+            >
+              Administrator
+            </p>
           </div>
         </div>
+        <button
+          onclick="logout()"
+          class="w-full bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white p-4 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-3"
+        >
+          <i class="fa-solid fa-power-off"></i> KELUAR SISTEM
+        </button>
       </div>
     </aside>
 
-    <div class="flex-1 flex flex-col">
-      <header
-        class="h-20 bg-white/80 glass border-b border-slate-200 flex items-center justify-between px-10 sticky top-0 z-10"
+    <nav class="bottom-nav">
+      <a href="index.html" class="active"
+        ><i class="fa-solid fa-chart-pie text-xl"></i><span>Dashboard</span></a
       >
+      <a href="barang.html"
+        ><i class="fa-solid fa-box text-xl"></i><span>Barang</span></a
+      >
+      <a href="transaksi.html"
+        ><i class="fa-solid fa-receipt text-xl"></i><span>Transaksi</span></a
+      >
+      <a href="dapur.html"
+        ><i class="fa-solid fa-utensils text-xl"></i><span>Dapur</span></a
+      >
+      <a href="settings.html"
+        ><i class="fa-solid fa-gear text-xl"></i><span>Settings</span></a
+      >
+    </nav>
+
+    <main class="main-content p-6 md:p-10">
+      <header class="flex justify-between items-center mb-10">
         <div>
-          <h2 class="text-2xl font-bold text-slate-800">Overview Dashboard</h2>
-          <p class="text-sm text-slate-500">Selamat datang kembali, Admin.</p>
+          <h2
+            class="text-3xl font-black text-[#061e49] tracking-tight uppercase"
+          >
+            Dashboard
+          </h2>
+          <p class="text-gray-400 font-medium text-sm">
+            Statistik operasional
+            <span class="text-amber-600 font-bold">Koperasi Aguna</span> hari
+            ini.
+          </p>
         </div>
-        <div class="flex items-center space-x-4">
-          <span
-            id="current-date"
-            class="text-sm font-medium text-slate-500 bg-slate-100 px-4 py-2 rounded-lg"
-          ></span>
+        <div
+          class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 px-4"
+        >
+          <div class="text-right hidden sm:block">
+            <p
+              id="currentDate"
+              class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none"
+            >
+              Memuat Tanggal...
+            </p>
+            <p id="currentTime" class="text-sm font-black text-[#061e49]">
+              00:00 WIB
+            </p>
+          </div>
+          <div class="h-8 w-[1px] bg-gray-100 hidden sm:block"></div>
+          <i class="fa-regular fa-calendar-check text-amber-500 text-xl"></i>
         </div>
       </header>
 
-      <main class="flex-1 overflow-y-auto p-10">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="stat-card flex items-center gap-5">
           <div
-            class="stat-card bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex items-center justify-between"
+            class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm"
           >
-            <div>
-              <p
-                class="text-sm font-bold text-slate-400 uppercase tracking-widest"
-              >
-                Total Unit Dapur
-              </p>
-              <h3
-                id="count-dapur"
-                class="text-4xl font-black text-slate-800 mt-2"
-              >
-                ...
-              </h3>
-              <p class="text-xs text-indigo-500 mt-2 font-semibold">
-                <i class="fas fa-arrow-up mr-1"></i> Terhubung Real-time
-              </p>
-            </div>
-            <div
-              class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner"
-            >
-              <i class="fas fa-store text-2xl"></i>
-            </div>
+            <i class="fa-solid fa-boxes-stacked"></i>
           </div>
-
-          <div
-            class="stat-card bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex items-center justify-between opacity-80"
-          >
-            <div>
-              <p
-                class="text-sm font-bold text-slate-400 uppercase tracking-widest"
-              >
-                Aktif Hari Ini
-              </p>
-              <h3 class="text-4xl font-black text-slate-800 mt-2">0</h3>
-              <p class="text-xs text-slate-400 mt-2">
-                Fitur sedang dikembangkan
-              </p>
-            </div>
-            <div
-              class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600"
+          <div>
+            <p
+              class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
             >
-              <i class="fas fa-check-circle text-2xl"></i>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="bg-indigo-600 rounded-[2rem] p-10 text-white flex flex-col md:flex-row items-center justify-between shadow-2xl shadow-indigo-200 overflow-hidden relative"
-        >
-          <div class="relative z-10">
-            <h2 class="text-3xl font-bold mb-4">
-              Kelola Sistem Aguna <br />dengan Lebih Mudah
-            </h2>
-            <p class="text-indigo-100 mb-6 max-w-md">
-              Gunakan Menu Dapur untuk memantau pendaftaran, lokasi, dan akun
-              setiap unit secara terpusat.
+              Total Barang
             </p>
-            <a
-              href="dapur.html"
-              class="bg-white text-indigo-600 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-all inline-block"
-              >Buka Menu Dapur</a
-            >
-          </div>
-          <div class="hidden md:block opacity-20 absolute -right-10 -bottom-10">
-            <i class="fas fa-utensils text-[200px] -rotate-12"></i>
+            <h3 id="statTotalBarang" class="text-2xl font-black text-[#061e49]">
+              0
+            </h3>
           </div>
         </div>
-      </main>
-    </div>
+
+        <div class="stat-card flex items-center gap-5">
+          <div
+            class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm"
+          >
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div>
+            <p
+              class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+            >
+              Saldo Kas Aktif
+            </p>
+            <h3 id="statSaldoAktif" class="text-2xl font-black text-[#061e49]">
+              Rp 0
+            </h3>
+          </div>
+        </div>
+
+        <div class="stat-card flex items-center gap-5">
+          <div
+            class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm"
+          >
+            <i class="fa-solid fa-fire-burner"></i>
+          </div>
+          <div>
+            <p
+              class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+            >
+              Total Dapur
+            </p>
+            <h3 id="statTotalDapur" class="text-2xl font-black text-[#061e49]">
+              0
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-[2.5rem] p-6 md:p-10 border border-gray-100 shadow-sm"
+      >
+        <div class="flex justify-between items-center mb-8">
+          <div>
+            <h3
+              class="text-xl font-black text-[#061e49] uppercase tracking-tight"
+            >
+              Laba Bersih Dapur
+            </h3>
+            <p class="text-xs text-gray-400 font-medium italic">
+              Dihitung dari (Harga Jual - Harga Beli) collection preorders
+            </p>
+          </div>
+          <span
+            class="bg-amber-100 text-amber-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider"
+            >Harian</span
+          >
+        </div>
+        <div class="relative h-[300px] w-full">
+          <canvas id="labaChart"></canvas>
+        </div>
+      </div>
+    </main>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -162,27 +339,151 @@
         storageBucket: "koperasi-aguna-3a14a.firebasestorage.app",
         messagingSenderId: "668307732730",
         appId: "1:668307732730:web:c2457d9a690eb303c3f143",
-        measurementId: "G-GJKDJ6LNDQ",
       };
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // Update Tanggal
-      const options = {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      };
-      document.getElementById("current-date").innerText =
-        new Date().toLocaleDateString("id-ID", options);
-
-      // Real-time counter
-      onSnapshot(collection(db, "dapur"), (snapshot) => {
-        const countElement = document.getElementById("count-dapur");
-        countElement.innerText = snapshot.size;
+      // Hitung Total Barang
+      onSnapshot(collection(db, "master_barang"), (snap) => {
+        document.getElementById("statTotalBarang").innerText = snap.size;
       });
+
+      // Hitung Total Dapur
+      onSnapshot(collection(db, "dapur"), (snap) => {
+        document.getElementById("statTotalDapur").innerText = snap.size;
+      });
+
+      // Hitung Saldo Kas Aktif
+      onSnapshot(collection(db, "transaksi"), (snap) => {
+        let totalIn = 0;
+        let totalOut = 0;
+        snap.forEach((doc) => {
+          const d = doc.data();
+          const amount = d.amount || 0;
+          if (d.type === "Pemasukan") totalIn += amount;
+          else if (
+            d.type === "Pengeluaran" ||
+            (d.type === "Kasbon" && d.status === "Belum Lunas")
+          )
+            totalOut += amount;
+        });
+        document.getElementById("statSaldoAktif").innerText =
+          new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+          }).format(totalIn - totalOut);
+      });
+
+      // --- LOGIKA GRAFIK LABA BERSIH (Harga Jual - Harga Beli) ---
+      onSnapshot(collection(db, "preorders"), (snap) => {
+        let labaPerJam = new Array(24).fill(0);
+        const todayStr = new Date().toDateString();
+
+        snap.forEach((doc) => {
+          const d = doc.data();
+
+          // Kalkulasi Laba: Harga Jual - Harga Beli
+          const jual = d.harga_jual || 0;
+          const beli = d.harga_beli || 0;
+          const profit = jual - beli;
+
+          if (d.createdAt) {
+            const dateObj = new Date(d.createdAt.seconds * 1000);
+            if (dateObj.toDateString() === todayStr) {
+              const hour = dateObj.getHours();
+              labaPerJam[hour] += profit;
+            }
+          }
+        });
+        updateChart(labaPerJam);
+      });
+
+      let labaChart;
+      function updateChart(dataPoints) {
+        const ctx = document.getElementById("labaChart").getContext("2d");
+        const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+
+        if (labaChart) {
+          labaChart.data.datasets[0].data = dataPoints;
+          labaChart.update();
+          return;
+        }
+
+        labaChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Laba Bersih (IDR)",
+                data: dataPoints,
+                borderColor: "#f59e0b",
+                backgroundColor: "rgba(245, 158, 11, 0.1)",
+                borderWidth: 4,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2,
+                pointBackgroundColor: "#f59e0b",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return (
+                      "Laba Bersih: Rp " + context.raw.toLocaleString("id-ID")
+                    );
+                  },
+                },
+              },
+            },
+            scales: {
+              y: { beginAtZero: true, grid: { color: "#f1f5f9" } },
+              x: { grid: { display: false } },
+            },
+          },
+        });
+      }
+    </script>
+
+    <script>
+      const userEmail = localStorage.getItem("userEmail") || "Admin";
+      document.getElementById("sideUserName").innerText = userEmail;
+      document.getElementById("initials").innerText = userEmail
+        .substring(0, 2)
+        .toUpperCase();
+
+      window.logout = () => {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("userEmail");
+        window.location.href = "login.html";
+      };
+
+      function updateTime() {
+        const now = new Date();
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        };
+        document.getElementById("currentDate").innerText =
+          now.toLocaleDateString("id-ID", options);
+        document.getElementById("currentTime").innerText =
+          now.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }) + " WIB";
+      }
+      setInterval(updateTime, 1000);
+      updateTime();
     </script>
   </body>
 </html>
