@@ -3,44 +3,136 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sistem Kasbon & Transaksi - Aguna</title>
+    <title>Transaksi & Kasbon - Naila Jasmin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
       body {
         font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: #f8fafc;
       }
-      .glass {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(15px);
+      /* Sidebar Desktop */
+      .sidebar {
+        width: 280px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background: #061e49;
+        z-index: 100;
+      }
+      .logo-box {
+        background: #f59e0b; /* Warna Orange */
+        padding: 0.5rem;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: #000000; /* Icon Hitam */
+      }
+      .main-content {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+        min-height: 100vh;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 1.25rem;
+        transition: all 0.3s;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+      }
+      .nav-link.active {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+      }
+
+      /* Bottom Navbar Mobile */
+      .bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #f1f5f9;
+        padding: 0.75rem;
+        z-index: 200;
+        justify-content: space-around;
+      }
+      .bottom-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 10px;
+        font-weight: bold;
+        color: #94a3b8;
+      }
+      .bottom-nav a.active {
+        color: #3b82f6;
+      }
+
+      /* Responsive Logic */
+      @media (max-width: 1024px) {
+        .sidebar {
+          display: none !important;
+        }
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+          padding-bottom: 80px;
+        }
+        .bottom-nav {
+          display: flex;
+        }
+        header {
+          padding-left: 1.5rem !important;
+          padding-right: 1.5rem !important;
+        }
+        header h2 {
+          font-size: 1.125rem !important;
+        }
+        header p {
+          font-size: 0.75rem !important;
+        }
+        .header-btn {
+          padding-left: 1rem !important;
+          padding-right: 1rem !important;
+          height: 40px;
+          font-size: 10px !important;
+        }
+        .p-10 {
+          padding: 1.5rem !important;
+        }
+      }
+
+      .balance-gradient {
+        background: linear-gradient(135deg, #061e49 0%, #1e3a8a 100%);
       }
       .card-modern {
         border-radius: 2rem;
         border: 1px solid #f1f5f9;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        background: white;
       }
-      .balance-gradient {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      }
-      .modal-animate {
-        animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      @keyframes modalPop {
-        from {
-          opacity: 0;
-          transform: scale(0.9) translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-        }
-      }
-
-      /* Skeleton Loading Animation */
       .skeleton {
         background: #f1f5f9;
         position: relative;
@@ -83,153 +175,221 @@
       }
     </style>
   </head>
-  <body class="bg-[#f8fafc] text-slate-800 min-h-screen pb-20">
-    <nav
-      class="glass sticky top-0 z-[100] border-b border-slate-200 px-6 md:px-12 py-4 flex justify-between items-center"
-    >
-      <div class="text-indigo-600 font-black tracking-tighter text-2xl">
-        AGUNA<span class="text-slate-800">SYS</span>
+  <body class="flex overflow-hidden">
+    <aside class="sidebar flex flex-col p-6 text-white shadow-2xl">
+      <div class="flex items-center gap-4 mb-12 px-2">
+        <div class="logo-box">
+          <i class="fa-solid fa-scale-balanced text-black text-xl"></i>
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-xl font-black italic tracking-tighter leading-none">
+            AGUNA
+          </h1>
+          <span
+            class="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase"
+            >Koperasi App</span
+          >
+        </div>
       </div>
-      <div class="flex items-center space-x-8">
-        <a
-          href="dapur.html"
-          class="text-[10px] font-black uppercase tracking-widest text-slate-400"
-          >Dapur</a
-        >
-        <a
-          href="transaksi.html"
-          class="text-[10px] font-black uppercase tracking-widest text-indigo-600 border-b-2 border-indigo-600 pb-1"
-          >Transaksi</a
-        >
-      </div>
-    </nav>
 
-    <main class="max-w-7xl mx-auto py-10 px-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div
-          class="lg:col-span-1 balance-gradient p-7 rounded-[2.5rem] shadow-xl shadow-indigo-100 text-white relative overflow-hidden"
-        >
-          <div class="relative z-10">
-            <p
-              class="text-[9px] font-black uppercase tracking-[0.2em] opacity-80"
-            >
-              Saldo Aktif Kas
-            </p>
-            <h2 id="stat-saldo" class="text-3xl font-black mt-1 leading-none">
-              Rp 0
-            </h2>
+      <nav class="flex-1 space-y-2">
+        <a href="index.html" class="nav-link">
+          <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+        </a>
+        <a href="barang.html" class="nav-link">
+          <i class="fa-solid fa-box w-5"></i> Master Barang
+        </a>
+        <a href="transaksi.html" class="nav-link active">
+          <i class="fa-solid fa-receipt w-5"></i> Transaksi
+        </a>
+        <a href="dapur.html" class="nav-link">
+          <i class="fa-solid fa-utensils w-5"></i> Dapur
+        </a>
+        <a href="settings.html" class="nav-link">
+          <i class="fa-solid fa-gear w-5"></i> Pengaturan
+        </a>
+      </nav>
+
+      <div class="mt-auto pt-6 border-t border-white/10">
+        <div class="flex items-center gap-3 px-2 mb-6">
+          <div
+            class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-bold text-[#061e49] shadow-lg"
+          >
+            <span id="initials">??</span>
           </div>
-          <i
-            class="fas fa-vault absolute -right-3 -bottom-3 text-white/10 text-7xl transform rotate-12"
-          ></i>
+          <div>
+            <p
+              class="text-xs font-bold text-white truncate w-32"
+              id="sideUserName"
+            >
+              Loading...
+            </p>
+            <p
+              class="text-[10px] text-amber-500 font-bold uppercase tracking-widest"
+            >
+              Administrator
+            </p>
+          </div>
         </div>
-        <div class="bg-white card-modern p-7 border-l-4 border-emerald-500">
-          <p
-            class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1"
-          >
-            Total Masuk
-          </p>
-          <h3
-            id="stat-masuk"
-            class="text-xl font-black text-slate-800 tracking-tight"
-          >
-            Rp 0
-          </h3>
-        </div>
-        <div class="bg-white card-modern p-7 border-l-4 border-rose-500">
-          <p
-            class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1"
-          >
-            Total Keluar
-          </p>
-          <h3
-            id="stat-keluar"
-            class="text-xl font-black text-slate-800 tracking-tight"
-          >
-            Rp 0
-          </h3>
-        </div>
-        <div class="bg-white card-modern p-7 border-l-4 border-amber-500">
-          <p
-            class="text-[9px] font-black text-amber-600 uppercase tracking-widest mb-1"
-          >
-            Kasbon Belum Kembali
-          </p>
-          <h3
-            id="stat-kasbon"
-            class="text-xl font-black text-slate-800 tracking-tight"
-          >
-            Rp 0
-          </h3>
-        </div>
-      </div>
-
-      <div class="flex justify-between items-end mb-8">
-        <h2 class="text-2xl font-black text-slate-900 tracking-tight">
-          Riwayat Keuangan
-        </h2>
         <button
-          onclick="toggleModalTx(true)"
-          class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs hover:bg-indigo-600 transition-all shadow-xl"
+          onclick="logout()"
+          class="w-full bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white p-4 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-3"
         >
-          <i class="fas fa-plus mr-2"></i> TAMBAH TRANSAKSI
+          <i class="fa-solid fa-power-off"></i> KELUAR SISTEM
         </button>
       </div>
+    </aside>
 
-      <div class="bg-white card-modern overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr
-                class="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b"
+    <nav class="bottom-nav shadow-[0_-10px_25px_rgba(0,0,0,0.05)]">
+      <a href="index.html"
+        ><i class="fa-solid fa-chart-pie text-lg"></i><span>Home</span></a
+      >
+      <a href="barang.html"
+        ><i class="fa-solid fa-box text-lg"></i><span>Barang</span></a
+      >
+      <a href="transaksi.html" class="active"
+        ><i class="fa-solid fa-receipt text-lg"></i><span>Transaksi</span></a
+      >
+      <a href="dapur.html"
+        ><i class="fa-solid fa-utensils text-lg"></i><span>Dapur</span></a
+      >
+      <a href="settings.html"
+        ><i class="fa-solid fa-gear text-lg"></i><span>Setting</span></a
+      >
+    </nav>
+
+    <main class="main-content">
+      <header
+        class="h-20 bg-white/80 backdrop-blur-md border-b flex items-center justify-between px-10 sticky top-0 z-10"
+      >
+        <div class="min-w-0">
+          <h2
+            class="text-2xl font-black text-[#061e49] italic uppercase truncate"
+          >
+            TRANSAKSI & KASBON
+          </h2>
+          <p class="text-sm text-slate-500 font-medium truncate">
+            Monitoring arus kas dan piutang
+          </p>
+        </div>
+        <button
+          onclick="toggleModalTx(true)"
+          class="header-btn bg-[#061e49] hover:bg-indigo-600 text-white px-8 py-3 rounded-2xl font-black text-xs transition-all shadow-xl shadow-indigo-100 flex items-center shrink-0"
+        >
+          <i class="fas fa-plus mr-2"></i>
+          <span class="hidden sm:inline">TAMBAH</span>
+        </button>
+      </header>
+
+      <div
+        class="p-10 space-y-10 overflow-y-auto"
+        style="height: calc(100vh - 80px)"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div
+            class="lg:col-span-1 balance-gradient p-7 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden"
+          >
+            <div class="relative z-10">
+              <p
+                class="text-[9px] font-black uppercase tracking-[0.2em] opacity-80"
               >
-                <th class="px-8 py-6">Keterangan</th>
-                <th class="px-8 py-6">Jenis</th>
-                <th class="px-8 py-6 text-center">Nominal</th>
-                <th class="px-8 py-6">Status</th>
-                <th class="px-8 py-6 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody
-              id="table-body"
-              class="divide-y divide-slate-50 text-sm font-medium"
+                Saldo Aktif Kas
+              </p>
+              <h2
+                id="stat-saldo"
+                class="text-3xl font-black mt-1 leading-none text-white"
+              >
+                Rp 0
+              </h2>
+            </div>
+            <i
+              class="fas fa-vault absolute -right-3 -bottom-3 text-white/10 text-7xl transform rotate-12"
+            ></i>
+          </div>
+          <div class="bg-white card-modern p-7 border-l-4 border-emerald-500">
+            <p
+              class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1"
             >
-              <script>
-                let skeletonHtml = "";
-                for (let i = 0; i < 5; i++) {
-                  skeletonHtml += `<tr>
-                                    <td class="px-8 py-6"><div class="skeleton h-4 w-32 mb-2"></div><div class="skeleton h-3 w-20"></div></td>
-                                    <td class="px-8 py-6"><div class="skeleton h-6 w-16"></div></td>
-                                    <td class="px-8 py-6"><div class="skeleton h-4 w-24 mx-auto"></div></td>
-                                    <td class="px-8 py-6"><div class="skeleton h-4 w-20"></div></td>
-                                    <td class="px-8 py-6"><div class="skeleton h-8 w-8 ml-auto rounded-xl"></div></td>
-                                </tr>`;
-                }
-                document.write(skeletonHtml);
-              </script>
-            </tbody>
-          </table>
+              Total Masuk
+            </p>
+            <h3
+              id="stat-masuk"
+              class="text-xl font-black text-emerald-600 tracking-tight"
+            >
+              Rp 0
+            </h3>
+          </div>
+          <div class="bg-white card-modern p-7 border-l-4 border-rose-500">
+            <p
+              class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1"
+            >
+              Total Keluar
+            </p>
+            <h3
+              id="stat-keluar"
+              class="text-xl font-black text-rose-600 tracking-tight"
+            >
+              Rp 0
+            </h3>
+          </div>
+          <div class="bg-white card-modern p-7 border-l-4 border-amber-500">
+            <p
+              class="text-[9px] font-black text-amber-600 uppercase tracking-widest mb-1"
+            >
+              Kasbon Pending
+            </p>
+            <h3
+              id="stat-kasbon"
+              class="text-xl font-black text-amber-600 tracking-tight"
+            >
+              Rp 0
+            </h3>
+          </div>
         </div>
 
-        <div class="p-6 bg-slate-50 border-t flex items-center justify-between">
-          <span
-            class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
-            >Halaman <span id="currentPage">1</span> dari
-            <span id="totalPages">1</span></span
+        <div class="bg-white card-modern overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[600px]">
+              <thead>
+                <tr
+                  class="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b bg-slate-50"
+                >
+                  <th class="px-8 py-6">Keterangan</th>
+                  <th class="px-8 py-6">Jenis</th>
+                  <th class="px-8 py-6 text-center">Nominal</th>
+                  <th class="px-8 py-6">Status</th>
+                  <th class="px-8 py-6 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody
+                id="table-body"
+                class="divide-y divide-slate-50 text-sm font-medium"
+              ></tbody>
+            </table>
+          </div>
+          <div
+            class="p-6 bg-slate-50 border-t flex items-center justify-between"
           >
-          <div class="flex gap-2">
-            <button
-              id="prevPage"
-              class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-400 hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50"
+            <span
+              class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
             >
-              <i class="fas fa-chevron-left text-xs"></i>
-            </button>
-            <button
-              id="nextPage"
-              class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-400 hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50"
-            >
-              <i class="fas fa-chevron-right text-xs"></i>
-            </button>
+              Halaman <span id="currentPage">1</span> dari
+              <span id="totalPages">1</span>
+            </span>
+            <div class="flex gap-2">
+              <button
+                id="prevPage"
+                class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-400 hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50"
+              >
+                <i class="fas fa-chevron-left text-xs"></i>
+              </button>
+              <button
+                id="nextPage"
+                class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-400 hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50"
+              >
+                <i class="fas fa-chevron-right text-xs"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -240,12 +400,14 @@
       class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
     >
       <div
-        class="bg-white rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl modal-animate"
+        class="bg-white rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl"
       >
         <div
           class="p-8 border-b flex justify-between items-center bg-slate-50/50"
         >
-          <h3 class="font-black text-xl text-slate-800">Input Transaksi</h3>
+          <h3 class="font-black text-xl text-[#061e49] italic">
+            INPUT TRANSAKSI
+          </h3>
           <button
             onclick="toggleModalTx(false)"
             class="text-slate-300 hover:text-rose-500 transition-all text-2xl"
@@ -297,7 +459,7 @@
           <button
             type="submit"
             id="btnSubmit"
-            class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xs tracking-widest hover:bg-indigo-700 transition-all uppercase"
+            class="w-full bg-[#061e49] text-white py-5 rounded-2xl font-black text-xs tracking-widest hover:bg-indigo-600 transition-all uppercase"
           >
             Simpan Transaksi
           </button>
@@ -310,7 +472,7 @@
       class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
     >
       <div
-        class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl modal-animate text-center p-10"
+        class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl text-center p-10"
       >
         <div
           id="notifIconBox"
@@ -356,30 +518,41 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
       const txCol = collection(db, "transaksi");
+
+      // --- LOAD PROFIL DARI LOCAL STORAGE (AUTH) ---
+      const loadUserProfile = () => {
+        const name = localStorage.getItem("userEmail") || "Admin";
+        document.getElementById("sideUserName").textContent = name;
+        document.getElementById("initials").textContent = name
+          .substring(0, 2)
+          .toUpperCase();
+      };
+
+      document.addEventListener("DOMContentLoaded", loadUserProfile);
+
+      window.logout = () => {
+        localStorage.clear();
+        window.location.href = "login.html";
+      };
+
       const formatIDR = (v) =>
         new Intl.NumberFormat("id-ID", {
           style: "currency",
           currency: "IDR",
           minimumFractionDigits: 0,
         }).format(v);
-
-      // Pagination Variables
       let currentPage = 1;
       const itemsPerPage = 5;
       let allData = [];
 
-      // --- FETCH REAL-TIME ---
       onSnapshot(query(txCol, orderBy("createdAt", "desc")), (snapshot) => {
         allData = [];
         let totalIn = 0,
           totalOut = 0,
           totalLoanPending = 0;
-
         snapshot.forEach((doc) => {
           const data = { id: doc.id, ...doc.data() };
           allData.push(data);
-
-          // Logic Perhitungan
           if (data.type === "Pemasukan") totalIn += data.amount;
           else if (data.type === "Pengeluaran") totalOut += data.amount;
           else if (data.type === "Kasbon") {
@@ -389,8 +562,6 @@
             }
           }
         });
-
-        // Update Stats
         document.getElementById("stat-saldo").innerText = formatIDR(
           totalIn - totalOut,
         );
@@ -398,22 +569,17 @@
         document.getElementById("stat-keluar").innerText = formatIDR(totalOut);
         document.getElementById("stat-kasbon").innerText =
           formatIDR(totalLoanPending);
-
         renderTable();
       });
 
-      // --- RENDER TABLE WITH PAGINATION ---
       function renderTable() {
         const tableBody = document.getElementById("table-body");
         const totalPages = Math.ceil(allData.length / itemsPerPage);
-
-        // Slice data for current page
         const startIndex = (currentPage - 1) * itemsPerPage;
         const paginatedData = allData.slice(
           startIndex,
           startIndex + itemsPerPage,
         );
-
         let html = "";
         paginatedData.forEach((data) => {
           const typeStyle =
@@ -426,36 +592,17 @@
             data.status === "Lunas" || data.status === "Selesai"
               ? "bg-emerald-500"
               : "bg-slate-300";
-
           html += `<tr class="hover:bg-slate-50 transition-all border-b border-slate-50">
-                    <td class="px-8 py-6">
-                        <div class="font-bold text-slate-800">${data.title}</div>
-                        <div class="text-[10px] text-slate-300 font-black mt-1 tracking-widest uppercase">ID: ${data.id.substring(0, 8)}</div>
-                    </td>
+                    <td class="px-8 py-6"><div class="font-bold text-[#061e49]">${data.title}</div><div class="text-[10px] text-slate-300 font-black mt-1 tracking-widest uppercase">ID: ${data.id.substring(0, 8)}</div></td>
                     <td class="px-8 py-6"><span class="${typeStyle} px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">${data.type}</span></td>
                     <td class="px-8 py-6 font-black text-slate-700 text-center">${formatIDR(data.amount)}</td>
-                    <td class="px-8 py-6">
-                        <div class="flex items-center text-xs font-bold ${data.status === "Belum Lunas" ? "text-amber-600" : "text-slate-500"}">
-                            <div class="w-2 h-2 ${statusDot} rounded-full mr-2"></div> ${data.status}
-                        </div>
-                    </td>
-                    <td class="px-8 py-6 text-right space-x-2">
-                        ${
-                          data.type === "Kasbon" &&
-                          data.status === "Belum Lunas"
-                            ? `<button id="btn-pay-${data.id}" onclick="markAsPaid('${data.id}')" class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-500 hover:text-white transition-all inline-flex items-center justify-center"><i class="fas fa-check"></i></button>`
-                            : ""
-                        }
-                        <button onclick="confirmDelete('${data.id}')" class="w-10 h-10 bg-rose-50 text-rose-400 rounded-xl hover:bg-rose-500 hover:text-white transition-all inline-flex items-center justify-center"><i class="fas fa-trash-alt"></i></button>
-                    </td>
+                    <td class="px-8 py-6"><div class="flex items-center text-xs font-bold ${data.status === "Belum Lunas" ? "text-amber-600" : "text-slate-500"}"><div class="w-2 h-2 ${statusDot} rounded-full mr-2"></div> ${data.status}</div></td>
+                    <td class="px-8 py-6 text-right space-x-2">${data.type === "Kasbon" && data.status === "Belum Lunas" ? `<button id="btn-pay-${data.id}" onclick="markAsPaid('${data.id}')" class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-500 hover:text-white transition-all inline-flex items-center justify-center"><i class="fas fa-check"></i></button>` : ""}<button onclick="confirmDelete('${data.id}')" class="w-10 h-10 bg-rose-50 text-rose-400 rounded-xl hover:bg-rose-500 hover:text-white transition-all inline-flex items-center justify-center"><i class="fas fa-trash-alt"></i></button></td>
                 </tr>`;
         });
-
         tableBody.innerHTML =
           html ||
           '<tr><td colspan="5" class="p-20 text-center text-slate-300 font-black uppercase text-[10px]">Data Kosong</td></tr>';
-
-        // Update UI Pagination
         document.getElementById("currentPage").innerText = currentPage;
         document.getElementById("totalPages").innerText = totalPages || 1;
         document.getElementById("prevPage").disabled = currentPage === 1;
@@ -463,7 +610,6 @@
           currentPage === totalPages || totalPages === 0;
       }
 
-      // --- PAGINATION EVENTS ---
       document.getElementById("prevPage").onclick = () => {
         if (currentPage > 1) {
           currentPage--;
@@ -477,7 +623,6 @@
         }
       };
 
-      // --- SIMPAN DATA ---
       document.getElementById("formTransaksi").onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById("btnSubmit");
@@ -502,7 +647,6 @@
         btn.innerText = "Simpan Transaksi";
       };
 
-      // --- LUNASKAN KASBON ---
       window.markAsPaid = async (id) => {
         const btn = document.getElementById(`btn-pay-${id}`);
         btn.disabled = true;
@@ -516,7 +660,6 @@
         }
       };
 
-      // --- HAPUS DATA ---
       window.confirmDelete = (id) => {
         showNotif(
           "alert",
@@ -529,7 +672,6 @@
         );
       };
 
-      // --- UI UTILS ---
       window.toggleModalTx = (s) =>
         document.getElementById("modalTx").classList.toggle("hidden", !s);
       window.showNotif = (
@@ -560,6 +702,14 @@
       };
       window.closeNotif = () =>
         document.getElementById("modalNotif").classList.add("hidden");
+
+      document.getElementById("table-body").innerHTML = Array(5)
+        .fill(0)
+        .map(
+          () =>
+            `<tr><td class="px-8 py-6"><div class="skeleton h-4 w-32 mb-2"></div><div class="skeleton h-3 w-20"></div></td><td class="px-8 py-6"><div class="skeleton h-6 w-16"></div></td><td class="px-8 py-6"><div class="skeleton h-4 w-24 mx-auto"></div></td><td class="px-8 py-6"><div class="skeleton h-4 w-20"></div></td><td class="px-8 py-6"><div class="skeleton h-8 w-8 ml-auto rounded-xl"></div></td></tr>`,
+        )
+        .join("");
     </script>
   </body>
 </html>
