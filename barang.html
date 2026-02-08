@@ -91,7 +91,6 @@
         .sidebar {
           display: none !important;
         }
-        /* Padding-bottom ditingkatkan menjadi 180px agar konten benar-benar di atas navbar */
         .main-content {
           margin-left: 0;
           width: 100%;
@@ -512,8 +511,8 @@
 
       let allData = [];
       let currentPage = 1;
+      const itemsPerPage = 5; // PAGINATION PER 5 ITEM
       let mobileVisibleItems = 5;
-      const itemsPerPage = 5;
       let deleteTargetId = null;
 
       const name = localStorage.getItem("userEmail") || "Admin";
@@ -560,8 +559,7 @@
         const btnSimpanText = document.getElementById("btnSimpanText");
 
         btnSimpan.disabled = true;
-        btnSimpan.classList.add("opacity-70", "cursor-not-allowed");
-        btnSimpanText.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Memproses...`;
+        btnSimpanText.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i>`;
 
         const data = {
           uid: document.getElementById("uidBarang").value,
@@ -584,7 +582,6 @@
           alert(err.message);
         } finally {
           btnSimpan.disabled = false;
-          btnSimpan.classList.remove("opacity-70", "cursor-not-allowed");
           btnSimpanText.innerHTML = "Simpan Data";
         }
       };
@@ -599,20 +596,25 @@
           "mobileLoadMoreContainer",
         );
         const empty = document.getElementById("emptyState");
+        const desktopTbl = document.getElementById("desktopContainer");
 
         tableBody.innerHTML = "";
         mobileContainer.innerHTML = "";
 
         if (allData.length === 0) {
           empty.classList.remove("hidden");
-          document.getElementById("desktopContainer").classList.add("hidden");
+          desktopTbl.classList.add("hidden");
           desktopPagination.classList.add("hidden");
           mobileLoadMore.classList.add("hidden");
           return;
         }
 
         empty.classList.add("hidden");
-        document.getElementById("desktopContainer").classList.remove("hidden");
+        desktopTbl.classList.remove("hidden");
+
+        // PAGINATION LOGIC (DESKTOP)
+        const totalPages = Math.ceil(allData.length / itemsPerPage);
+        if (currentPage > totalPages) currentPage = totalPages || 1;
 
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
@@ -637,13 +639,19 @@
           tableBody.appendChild(tr);
         });
 
-        const totalPages = Math.ceil(allData.length / itemsPerPage);
-        document.getElementById("pageInfo").innerText =
-          `Halaman ${currentPage} dari ${totalPages}`;
-        document.getElementById("prevPage").disabled = currentPage === 1;
-        document.getElementById("nextPage").disabled =
-          currentPage === totalPages;
+        // Update Desktop Pagination UI
+        if (allData.length > itemsPerPage) {
+          desktopPagination.classList.remove("hidden");
+          document.getElementById("pageInfo").innerText =
+            `Halaman ${currentPage} dari ${totalPages}`;
+          document.getElementById("prevPage").disabled = currentPage === 1;
+          document.getElementById("nextPage").disabled =
+            currentPage === totalPages;
+        } else {
+          desktopPagination.classList.add("hidden");
+        }
 
+        // LOAD MORE LOGIC (MOBILE)
         const mobileItems = allData.slice(0, mobileVisibleItems);
         mobileItems.forEach((docSnap) => {
           const item = docSnap.data();
@@ -671,6 +679,7 @@
         }
       }
 
+      // Event Listeners for Pagination
       document.getElementById("prevPage").onclick = () => {
         if (currentPage > 1) {
           currentPage--;
@@ -683,18 +692,19 @@
           renderData();
         }
       };
-
       document.getElementById("btnLoadMore").onclick = () => {
         mobileVisibleItems += 5;
         renderData();
       };
 
+      // Firestore Listener
       onSnapshot(query(colRef, orderBy("createdAt", "desc")), (snap) => {
         document.getElementById("loadingState").classList.add("hidden");
         allData = snap.docs;
         renderData();
       });
 
+      // Window functions for Actions
       window.editItem = (id, uid, nama, harga) => {
         document.getElementById("editId").value = id;
         document.getElementById("uidBarang").value = uid;
