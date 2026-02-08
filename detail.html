@@ -36,6 +36,18 @@
         width: 100%;
         border-radius: 1.5rem;
       }
+      /* Pagination Style */
+      .page-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+      }
+      .page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
     </style>
   </head>
   <body class="bg-[#f8fafc] text-slate-800 min-h-screen pb-20">
@@ -182,7 +194,23 @@
                 class="w-full md:w-auto px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 outline-none"
               />
             </div>
-            <div class="overflow-x-auto">
+
+            <div class="overflow-x-auto relative min-h-[300px]">
+              <div
+                id="table-loader"
+                class="absolute inset-0 bg-white/60 z-10 flex items-center justify-center hidden"
+              >
+                <div class="flex flex-col items-center">
+                  <div
+                    class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"
+                  ></div>
+                  <span
+                    class="text-[9px] font-bold text-indigo-600 mt-2 tracking-widest uppercase"
+                    >Memuat Tabel...</span
+                  >
+                </div>
+              </div>
+
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr
@@ -193,6 +221,7 @@
                     <th class="px-8 py-5">Hrg Beli</th>
                     <th class="px-8 py-5">Hrg Jual</th>
                     <th class="px-8 py-5 text-emerald-600">Laba Bersih</th>
+                    <th class="px-8 py-5">Status</th>
                     <th class="px-8 py-5">Aksi</th>
                   </tr>
                 </thead>
@@ -201,6 +230,33 @@
                   class="divide-y divide-slate-50 text-sm font-medium"
                 ></tbody>
               </table>
+            </div>
+
+            <div
+              class="p-6 border-t bg-slate-50/30 flex items-center justify-between"
+            >
+              <p
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+                id="page-info"
+              >
+                Menampilkan 0 dari 0
+              </p>
+              <div class="flex space-x-2">
+                <button
+                  id="prevPage"
+                  onclick="changePage(-1)"
+                  class="page-btn bg-white border border-slate-200 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button
+                  id="nextPage"
+                  onclick="changePage(1)"
+                  class="page-btn bg-white border border-slate-200 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -295,6 +351,11 @@
         getFirestore,
         doc,
         getDoc,
+        collection,
+        query,
+        where,
+        onSnapshot,
+        orderBy,
       } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -314,38 +375,10 @@
 
       // State
       let map, marker, chartInstance;
-      const listBarang = [
-        {
-          nama: "Minyak Goreng 2L",
-          driver: "Budi Santoso",
-          qty: 15,
-          hrgBeli: 31000,
-          hrgJual: 38000,
-          fullDate: "2026-02-04",
-          lat: -6.2088,
-          lng: 106.8456,
-        },
-        {
-          nama: "Beras Pandan 5kg",
-          driver: "Ahmad Driver",
-          qty: 8,
-          hrgBeli: 62000,
-          hrgJual: 75000,
-          fullDate: "2026-02-04",
-          lat: -6.9147,
-          lng: 107.6098,
-        },
-        {
-          nama: "Gula Pasir 1kg",
-          driver: "Siti Logistik",
-          qty: 20,
-          hrgBeli: 14000,
-          hrgJual: 18000,
-          fullDate: "2026-02-03",
-          lat: -7.2575,
-          lng: 112.7521,
-        },
-      ];
+      let listBarang = [];
+      let filteredBarang = [];
+      let currentPage = 1;
+      const itemsPerPage = 5;
 
       const formatIDR = (v) =>
         new Intl.NumberFormat("id-ID", {
@@ -354,7 +387,6 @@
           minimumFractionDigits: 0,
         }).format(v);
 
-      // -- Page Initialization --
       async function initPage() {
         if (!docId) {
           window.location.href = "dapur.html";
@@ -373,43 +405,143 @@
             document.getElementById("det-pass").innerText =
               d.password || "******";
 
+            fetchPreOrders(d.uid);
+
             document.getElementById("loader").classList.add("hidden");
             document.getElementById("content").classList.remove("hidden");
-            renderTable(listBarang);
           }
         } catch (err) {
           console.error(err);
         }
       }
 
-      // -- Table Rendering (Pre-Order) --
+      function fetchPreOrders(targetUid) {
+        document.getElementById("table-loader").classList.remove("hidden");
+
+        const q = query(
+          collection(db, "preorders"),
+          where("uid_dapur", "==", targetUid),
+          orderBy("createdAt", "desc"),
+        );
+
+        onSnapshot(q, (snapshot) => {
+          listBarang = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            listBarang.push({
+              nama: data.namaBarang || "Produk Tanpa Nama",
+              driver: data.driver || "Belum Ada Driver",
+              qty: data.jumlah || 0,
+              hrgBeli: data.harga_beli || 0,
+              hrgJual: data.harga_jual || 0,
+              status: data.status || "Pending",
+              fullDate:
+                data.tanggal ||
+                new Date(data.createdAt?.seconds * 1000)
+                  .toISOString()
+                  .split("T")[0],
+              lat: data.lat || -6.2,
+              lng: data.lng || 106.8166,
+            });
+          });
+
+          applyFilters();
+          document.getElementById("table-loader").classList.add("hidden");
+
+          if (
+            !document.getElementById("tab-laba").classList.contains("hidden")
+          ) {
+            renderLabaChart();
+          }
+        });
+      }
+
       function renderTable(data) {
         const container = document.getElementById("table-barang");
-        container.innerHTML = data
+
+        // Pagination Logic
+        const totalItems = data.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedData = data.slice(start, end);
+
+        // Update UI Info
+        document.getElementById("page-info").innerText =
+          `Menampilkan ${paginatedData.length} dari ${totalItems} baris (Hal ${currentPage}/${totalPages})`;
+        document.getElementById("prevPage").disabled = currentPage === 1;
+        document.getElementById("nextPage").disabled =
+          currentPage === totalPages;
+
+        if (paginatedData.length === 0) {
+          container.innerHTML = `<tr><td colspan="7" class="px-8 py-10 text-center text-slate-400">Data tidak ditemukan.</td></tr>`;
+          return;
+        }
+
+        container.innerHTML = paginatedData
           .map((item) => {
             const labaBersih = (item.hrgJual - item.hrgBeli) * item.qty;
+
+            // STATUS COLORS LOGIC (Selesai vs Belum Datang)
+            let statusStyle = "";
+            const s = item.status.toLowerCase();
+
+            if (s === "sudah datang") {
+              // SUDAH DATANG (Hijau)
+              statusStyle =
+                "bg-emerald-500 text-white shadow-sm shadow-emerald-200";
+            } else {
+              // BELUM DATANG (Warna lain yang kontras)
+              if (s === "proses") {
+                statusStyle =
+                  "bg-amber-400 text-white shadow-sm shadow-amber-200";
+              } else if (s === "belum datang") {
+                statusStyle = "bg-sky-500 text-white shadow-sm shadow-sky-200";
+              } else if (s === "pending") {
+                statusStyle =
+                  "bg-slate-400 text-white shadow-sm shadow-slate-200";
+              } else if (s === "dibatalkan") {
+                statusStyle =
+                  "bg-rose-500 text-white shadow-sm shadow-rose-200";
+              } else {
+                statusStyle = "bg-indigo-400 text-white";
+              }
+            }
+
             return `
-                <tr class="hover:bg-slate-50 transition-all border-b border-slate-50 group">
-                    <td class="px-8 py-5">
-                        <div class="font-bold text-slate-800">${item.nama}</div>
-                        <div class="text-[10px] text-indigo-500 font-bold uppercase mt-1 italic"><i class="fas fa-truck mr-1"></i> Driver: ${item.driver}</div>
-                    </td>
-                    <td class="px-8 py-5 text-center font-black text-slate-500">${item.qty}</td>
-                    <td class="px-8 py-5 text-slate-400">${formatIDR(item.hrgBeli)}</td>
-                    <td class="px-8 py-5 font-bold text-slate-700">${formatIDR(item.hrgJual)}</td>
-                    <td class="px-8 py-5 font-black text-emerald-600">${formatIDR(labaBersih)}</td>
-                    <td class="px-8 py-5">
-                        <button onclick="openMap(${item.lat}, ${item.lng}, '${item.driver}', '${item.nama}')" 
-                                class="bg-indigo-50 text-indigo-600 px-5 py-2 rounded-xl text-xs font-black hover:bg-indigo-600 hover:text-white transition-all">
-                            <i class="fas fa-location-arrow mr-1"></i> Lacak
-                        </button>
-                    </td>
-                </tr>`;
+            <tr class="hover:bg-slate-50 transition-all border-b border-slate-50 group">
+                <td class="px-8 py-5">
+                    <div class="font-bold text-slate-800">${item.nama}</div>
+                    <div class="text-[10px] text-indigo-500 font-bold uppercase mt-1 italic"><i class="fas fa-truck mr-1"></i> Driver: ${item.driver}</div>
+                </td>
+                <td class="px-8 py-5 text-center font-black text-slate-500">${item.qty}</td>
+                <td class="px-8 py-5 text-slate-400">${formatIDR(item.hrgBeli)}</td>
+                <td class="px-8 py-5 font-bold text-slate-700">${formatIDR(item.hrgJual)}</td>
+                <td class="px-8 py-5 font-black text-emerald-600">${formatIDR(labaBersih)}</td>
+                <td class="px-8 py-5">
+                    <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${statusStyle}">
+                      ${item.status}
+                    </span>
+                </td>
+                <td class="px-8 py-5">
+                    <button onclick="openMap(${item.lat}, ${item.lng}, '${item.driver}', '${item.nama}')" 
+                            class="bg-indigo-50 text-indigo-600 px-5 py-2 rounded-xl text-xs font-black hover:bg-indigo-600 hover:text-white transition-all">
+                        <i class="fas fa-location-arrow mr-1"></i> Lacak
+                    </button>
+                </td>
+            </tr>`;
           })
           .join("");
       }
 
-      // -- Tab Switcher --
+      window.changePage = (dir) => {
+        currentPage += dir;
+        renderTable(filteredBarang);
+      };
+
       window.switchTab = (tab) => {
         const preorder = document.getElementById("tab-preorder");
         const laba = document.getElementById("tab-laba");
@@ -432,7 +564,6 @@
         }
       };
 
-      // -- Maps Logic --
       window.openMap = (lat, lng, driver, barang) => {
         document.getElementById("modalMaps").classList.remove("hidden");
         document.getElementById("modal-title-driver").innerText =
@@ -458,14 +589,13 @@
       window.closeMap = () =>
         document.getElementById("modalMaps").classList.add("hidden");
 
-      // -- Profit Analysis Logic --
       function renderLabaChart() {
         const ctx = document.getElementById("labaChart").getContext("2d");
         if (chartInstance) chartInstance.destroy();
 
-        // Kalkulasi dinamis dari data
         const labaHarian = {};
         let totalSemua = 0;
+
         listBarang.forEach((i) => {
           const profit = (i.hrgJual - i.hrgBeli) * i.qty;
           labaHarian[i.fullDate] = (labaHarian[i.fullDate] || 0) + profit;
@@ -475,13 +605,16 @@
         document.getElementById("total-laba-summary").innerText =
           formatIDR(totalSemua);
 
+        const sortedDates = Object.keys(labaHarian).sort();
+        const sortedValues = sortedDates.map((date) => labaHarian[date]);
+
         chartInstance = new Chart(ctx, {
           type: "line",
           data: {
-            labels: Object.keys(labaHarian),
+            labels: sortedDates,
             datasets: [
               {
-                data: Object.values(labaHarian),
+                data: sortedValues,
                 borderColor: "#10b981",
                 backgroundColor: "rgba(16, 185, 129, 0.1)",
                 fill: true,
@@ -500,16 +633,30 @@
         });
       }
 
-      // -- Filter Logic --
-      document.getElementById("searchBarang").addEventListener("input", (e) => {
-        const v = e.target.value.toLowerCase();
-        const filtered = listBarang.filter(
-          (i) =>
-            i.nama.toLowerCase().includes(v) ||
-            i.driver.toLowerCase().includes(v),
-        );
-        renderTable(filtered);
-      });
+      function applyFilters() {
+        const searchVal = document
+          .getElementById("searchBarang")
+          .value.toLowerCase();
+        const dateVal = document.getElementById("filterTanggal").value;
+
+        filteredBarang = listBarang.filter((i) => {
+          const matchSearch =
+            i.nama.toLowerCase().includes(searchVal) ||
+            i.driver.toLowerCase().includes(searchVal);
+          const matchDate = dateVal === "" || i.fullDate === dateVal;
+          return matchSearch && matchDate;
+        });
+
+        currentPage = 1; // Reset to first page on filter
+        renderTable(filteredBarang);
+      }
+
+      document
+        .getElementById("searchBarang")
+        .addEventListener("input", applyFilters);
+      document
+        .getElementById("filterTanggal")
+        .addEventListener("change", applyFilters);
 
       initPage();
     </script>
